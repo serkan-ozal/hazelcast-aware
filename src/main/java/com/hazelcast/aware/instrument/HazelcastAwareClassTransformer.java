@@ -22,7 +22,7 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 
-import com.hazelcast.aware.util.HazelcastUtil;
+import com.hazelcast.aware.util.HazelcastAwareUtil;
 
 import javassist.ClassClassPath;
 import javassist.ClassPool;
@@ -55,8 +55,8 @@ public class HazelcastAwareClassTransformer implements ClassFileTransformer {
         	if (isHazelcastAware(ct)) {
 	            System.out.println("[INFO] : " + "Class " + className + " is being instrumented ...");
 	            
-	            cp.importPackage(HazelcastUtil.class.getPackage().getName());
-	            cp.appendClassPath(new ClassClassPath(HazelcastUtil.class));
+	            cp.importPackage(HazelcastAwareUtil.class.getPackage().getName());
+	            cp.appendClassPath(new ClassClassPath(HazelcastAwareUtil.class));
 	            
 	            // Ensure that there will be at least one class initializer (or constructor)
 	            ct.makeClassInitializer();
@@ -64,7 +64,7 @@ public class HazelcastAwareClassTransformer implements ClassFileTransformer {
 	            CtConstructor[] constructors = ct.getConstructors();
 	            
 	            for (CtConstructor c : constructors) {
-	            	c.insertAfter("HazelcastUtil.injectHazelcast(this);");
+	            	c.insertAfter("HazelcastAwareUtil.injectHazelcast(this);");
 	            }
 	            
 	            return ct.toBytecode();

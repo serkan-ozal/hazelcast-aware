@@ -23,9 +23,9 @@ package com.hazelcast.aware.util;
  * 		GitHub   : https://github.com/serkan-ozal
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
-public class HazelcastUtil {
+public class HazelcastAwareUtil {
 	
-	private HazelcastUtil() {
+	private HazelcastAwareUtil() {
 		
 	}
 	

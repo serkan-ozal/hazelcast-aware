@@ -19,7 +19,10 @@ package com.hazelcast.aware.config.manager;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hazelcast.aware.config.DefaultConfigs;
 import com.hazelcast.aware.config.provider.ConfigProvider;
+import com.hazelcast.logging.ILogger;
+import com.hazelcast.logging.Logger;
 
 /**
  * @author Serkan ÖZAL
@@ -30,7 +33,10 @@ import com.hazelcast.aware.config.provider.ConfigProvider;
  */
 public abstract class BaseConfigManager implements ConfigManager {
 
+	protected final ILogger logger = Logger.getLogger(getClass());
+	
 	protected List<ConfigProvider> configProviderList = new ArrayList<ConfigProvider>();
+	protected DefaultConfigs defaultConfigs = new DefaultConfigs();
 	
 	public BaseConfigManager() {
 		init();
@@ -43,7 +49,7 @@ public abstract class BaseConfigManager implements ConfigManager {
 			configProviderList.add(configProvider);
 		}
 	}
-	
+
 	@Override
 	public void addConfigProvider(ConfigProvider configProvider) {
 		configProviderList.add(configProvider);
@@ -57,6 +63,11 @@ public abstract class BaseConfigManager implements ConfigManager {
 	@Override
 	public List<ConfigProvider> getAllConfigProviders() {
 		return configProviderList;
+	}
+	
+	@Override
+	public DefaultConfigs getDefaultConfigs() {
+		return defaultConfigs;
 	}
 	
 }

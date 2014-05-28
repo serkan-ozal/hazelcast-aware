@@ -24,6 +24,8 @@ package com.hazelcast.aware.domain.model.config;
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
 @SuppressWarnings("rawtypes")
-public interface HazelcastAwareConfig<C extends HazelcastAwareConfig> {
+public interface HazelcastAwareMergeableConfig<C extends HazelcastAwareMergeableConfig> extends HazelcastAwareConfig {
+	
+	C merge(C config);
 	
 }

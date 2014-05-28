@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.hazelcast.aware.domain.model.config;
+package com.hazelcast.aware.config;
 
 /**
  * @author Serkan ÖZAL
@@ -23,7 +23,16 @@ package com.hazelcast.aware.domain.model.config;
  * 		GitHub   : https://github.com/serkan-ozal
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
-@SuppressWarnings("rawtypes")
-public interface HazelcastAwareConfig<C extends HazelcastAwareConfig> {
+public class DefaultConfigs {
+
+	private String defaultInstanceName;
+
+	public String getDefaultInstanceName() {
+		return defaultInstanceName;
+	}
+	
+	public void setDefaultInstanceName(String defaultInstanceName) {
+		this.defaultInstanceName = defaultInstanceName;
+	}
 	
 }

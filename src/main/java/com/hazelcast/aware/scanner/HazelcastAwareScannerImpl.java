@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package com.hazelcast.aware.config.manager;
+package com.hazelcast.aware.scanner;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
-import com.hazelcast.aware.config.DefaultConfigs;
-import com.hazelcast.aware.config.provider.ConfigProvider;
-import com.hazelcast.aware.domain.model.config.HazelcastAwareClassConfig;
-import com.hazelcast.aware.domain.model.config.HazelcastAwareFieldConfig;
+import com.hazelcast.aware.config.provider.annotation.HazelcastAwareClass;
+
+import net.sf.corn.cps.CPScanner;
+import net.sf.corn.cps.ClassFilter;
 
 /**
  * @author Serkan ÖZAL
@@ -31,15 +30,23 @@ import com.hazelcast.aware.domain.model.config.HazelcastAwareFieldConfig;
  * 		GitHub   : https://github.com/serkan-ozal
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
-public interface ConfigManager {
-
-	void addConfigProvider(ConfigProvider configProvider);
-	void removeConfigProvider(ConfigProvider configProvider);
-	List<ConfigProvider> getAllConfigProviders();
+public class HazelcastAwareScannerImpl implements HazelcastAwareScanner {
 	
-	DefaultConfigs getDefaultConfigs();
+	private Class<?>[] hazelcastAwareClasses;
 	
-	HazelcastAwareFieldConfig getHazelcastAwareFieldConfig(Field field);
-	HazelcastAwareClassConfig getHazelcastAwareClassConfig(Class<?> clazz);
+	@Override
+	public synchronized Class<?>[] getHazelcastAwareClasses() {
+		if (hazelcastAwareClasses == null) {
+			List<Class<?>> hazelcastAwareClassList = 
+					CPScanner.scanClasses(
+							new ClassFilter().
+									annotation(HazelcastAwareClass.class));
+			if (hazelcastAwareClassList != null) {
+				hazelcastAwareClasses = new Class<?>[hazelcastAwareClassList.size()];
+				hazelcastAwareClasses = hazelcastAwareClassList.toArray(hazelcastAwareClasses);
+			}
+		}
+		return hazelcastAwareClasses;
+	}
 	
 }

@@ -25,9 +25,10 @@ import java.util.List;
  * 		GitHub   : https://github.com/serkan-ozal
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
-public class HazelcastAwareClassConfig implements HazelcastAwareConfig {
+public class HazelcastAwareClassConfig implements HazelcastAwareMergeableConfig<HazelcastAwareClassConfig> {
 
 	private Class<?> clazz;
+	private String instanceName;
 	private List<HazelcastAwareFieldConfig> fieldConfigs;
 	
 	public Class<?> getClazz() {
@@ -38,12 +39,55 @@ public class HazelcastAwareClassConfig implements HazelcastAwareConfig {
 		this.clazz = clazz;
 	}
 	
+	public String getInstanceName() {
+		return instanceName;
+	}
+	
+	public void setInstanceName(String instanceName) {
+		this.instanceName = instanceName;
+	}
+	
 	public List<HazelcastAwareFieldConfig> getFieldConfigs() {
 		return fieldConfigs;
 	}
 	
 	public void setFieldConfigs(List<HazelcastAwareFieldConfig> fieldConfigs) {
 		this.fieldConfigs = fieldConfigs;
+	}
+	
+	@Override
+	public HazelcastAwareClassConfig merge(HazelcastAwareClassConfig config) {
+		if (clazz == null) {
+			clazz = config.clazz;
+		}
+		if (config.fieldConfigs != null && !config.fieldConfigs.isEmpty()) {
+			if (fieldConfigs == null || fieldConfigs.isEmpty()) {
+				fieldConfigs = config.fieldConfigs;
+			}
+			else {
+				for (HazelcastAwareFieldConfig fieldConfig : config.fieldConfigs) {
+					if (!fieldConfigs.contains(fieldConfig)) {
+						fieldConfigs.add(fieldConfig);
+					}
+				}
+			}
+		}	
+		return this;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof HazelcastAwareClassConfig) {
+			return clazz.equals(((HazelcastAwareClassConfig)obj).clazz);
+		}
+		else {
+			return false;
+		}
+	}
+	
+	@Override
+	public int hashCode() {
+		return clazz.hashCode();
 	}
 	
 }

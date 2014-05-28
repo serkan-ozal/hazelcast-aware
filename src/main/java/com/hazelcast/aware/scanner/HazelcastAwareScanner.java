@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.hazelcast.aware.domain.model.config;
+package com.hazelcast.aware.scanner;
 
 /**
  * @author Serkan ÖZAL
@@ -23,7 +23,8 @@ package com.hazelcast.aware.domain.model.config;
  * 		GitHub   : https://github.com/serkan-ozal
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
-@SuppressWarnings("rawtypes")
-public interface HazelcastAwareConfig<C extends HazelcastAwareConfig> {
+public interface HazelcastAwareScanner {
+	
+	Class<?>[] getHazelcastAwareClasses();
 	
 }

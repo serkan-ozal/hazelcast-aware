@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.hazelcast.aware.domain.model.config;
+package com.hazelcast.aware.util;
 
 /**
  * @author Serkan ÖZAL
@@ -23,7 +23,14 @@ package com.hazelcast.aware.domain.model.config;
  * 		GitHub   : https://github.com/serkan-ozal
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
-@SuppressWarnings("rawtypes")
-public interface HazelcastAwareConfig<C extends HazelcastAwareConfig> {
+public class StringUtil {
+	
+	private StringUtil() {
+		
+	}
+	
+	public static boolean isEmpty(String str) {
+		return str == null || str.length() == 0;
+	}
 	
 }

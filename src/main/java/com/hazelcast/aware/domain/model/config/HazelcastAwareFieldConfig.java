@@ -18,6 +18,8 @@ package com.hazelcast.aware.domain.model.config;
 
 import java.lang.reflect.Field;
 
+import com.hazelcast.aware.util.StringUtil;
+
 /**
  * @author Serkan ÖZAL
  * 
@@ -25,7 +27,7 @@ import java.lang.reflect.Field;
  * 		GitHub   : https://github.com/serkan-ozal
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
-public class HazelcastAwareFieldConfig implements HazelcastAwareConfig {
+public class HazelcastAwareFieldConfig implements HazelcastAwareMergeableConfig<HazelcastAwareFieldConfig> {
 
 	private Class<?> ownerClass;
 	private Field field;
@@ -62,6 +64,38 @@ public class HazelcastAwareFieldConfig implements HazelcastAwareConfig {
 	
 	public void setMapFieldConfig(HazelcastAwareMapFieldConfig mapFieldConfig) {
 		this.mapFieldConfig = mapFieldConfig;
+	}
+	
+	@Override
+	public HazelcastAwareFieldConfig merge(HazelcastAwareFieldConfig config) {
+		if (ownerClass == null) {
+			ownerClass = config.ownerClass;
+		}
+		if (field == null) {
+			field = config.field;
+		}
+		if (StringUtil.isEmpty(instanceName)) {
+			instanceName = config.instanceName;
+		}
+		if (mapFieldConfig == null) {
+			mapFieldConfig = config.mapFieldConfig;
+		}
+		return this;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof HazelcastAwareFieldConfig) {
+			return field.equals(((HazelcastAwareFieldConfig)obj).field);
+		}
+		else {
+			return false;
+		}
+	}
+	
+	@Override
+	public int hashCode() {
+		return field.hashCode();
 	}
 	
 }

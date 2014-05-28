@@ -16,9 +16,14 @@
 
 package com.hazelcast.aware.config.manager;
 
+import java.lang.reflect.Field;
+
+import com.hazelcast.aware.config.provider.ConfigProvider;
 import com.hazelcast.aware.config.provider.annotation.AnnotationBasedConfigProvider;
 import com.hazelcast.aware.config.provider.properties.PropertiesBasedConfigProvider;
 import com.hazelcast.aware.config.provider.xml.XmlBasedConfigProvider;
+import com.hazelcast.aware.domain.model.config.HazelcastAwareClassConfig;
+import com.hazelcast.aware.domain.model.config.HazelcastAwareFieldConfig;
 
 /**
  * @author Serkan ÖZAL
@@ -34,6 +39,44 @@ public class ConfigManagerImpl extends BaseConfigManager {
 		addConfigProviderIfAvailable(new AnnotationBasedConfigProvider());
 		addConfigProviderIfAvailable(new XmlBasedConfigProvider());
 		addConfigProviderIfAvailable(new PropertiesBasedConfigProvider());
+	}
+
+	@Override
+	public HazelcastAwareFieldConfig getHazelcastAwareFieldConfig(Field field) {
+		HazelcastAwareFieldConfig fieldConfig = null;
+		for (ConfigProvider configProvider : configProviderList) {
+			if (configProvider.isAvailable()) {
+				if (fieldConfig == null) {
+					fieldConfig = configProvider.getHazelcastAwareFieldConfig(field);
+				}
+				else {
+					HazelcastAwareFieldConfig config = configProvider.getHazelcastAwareFieldConfig(field);
+					if (config != null) {
+						fieldConfig = fieldConfig.merge(config);
+					}
+				}
+			}
+		}
+		return fieldConfig;
+	}
+
+	@Override
+	public HazelcastAwareClassConfig getHazelcastAwareClassConfig(Class<?> clazz) {
+		HazelcastAwareClassConfig classConfig = null;
+		for (ConfigProvider configProvider : configProviderList) {
+			if (configProvider.isAvailable()) {
+				if (classConfig == null) {
+					classConfig = configProvider.getHazelcastAwareClassConfig(clazz);
+				}
+				else {
+					HazelcastAwareClassConfig config = configProvider.getHazelcastAwareClassConfig(clazz);
+					if (config != null) {
+						classConfig = classConfig.merge(config);
+					}
+				}
+			}
+		}
+		return classConfig;
 	}
 	
 }

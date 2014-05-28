@@ -21,7 +21,10 @@ import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
+import java.util.HashSet;
+import java.util.Set;
 
+import com.hazelcast.aware.config.provider.annotation.HazelcastAwareClass;
 import com.hazelcast.aware.util.HazelcastAwareUtil;
 
 import javassist.ClassClassPath;
@@ -37,26 +40,37 @@ import javassist.CtConstructor;
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
 public class HazelcastAwareClassTransformer implements ClassFileTransformer {
+
+	protected static final Set<String> alreadyInstrumentedClasses = new HashSet<String>();
 	
 	protected ClassPool cp = ClassPool.getDefault();
+	
+	public HazelcastAwareClassTransformer() {
+		init();
+	}
+	
+	protected void init() {
+		 cp.importPackage(HazelcastAwareUtil.class.getPackage().getName());
+         cp.appendClassPath(new ClassClassPath(HazelcastAwareUtil.class));
+	}
     
 	protected CtClass buildClass(byte[] bytes) throws IOException, RuntimeException {
         return cp.makeClass(new ByteArrayInputStream(bytes));
     }
 	
 	protected boolean isHazelcastAware(CtClass clazz) {
-		return false;
+		return clazz.hasAnnotation(HazelcastAwareClass.class);
 	}
 	
 	public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, 
 			ProtectionDomain domain, byte[] bytes) throws IllegalClassFormatException {
+		if (alreadyInstrumentedClasses.contains(className)) {
+			return bytes;
+		}
         try {
         	CtClass ct = buildClass(bytes);
         	if (isHazelcastAware(ct)) {
 	            System.out.println("[INFO] : " + "Class " + className + " is being instrumented ...");
-	            
-	            cp.importPackage(HazelcastAwareUtil.class.getPackage().getName());
-	            cp.appendClassPath(new ClassClassPath(HazelcastAwareUtil.class));
 	            
 	            // Ensure that there will be at least one class initializer (or constructor)
 	            ct.makeClassInitializer();
@@ -67,11 +81,13 @@ public class HazelcastAwareClassTransformer implements ClassFileTransformer {
 	            	c.insertAfter("HazelcastAwareUtil.injectHazelcast(this);");
 	            }
 	            
+	            alreadyInstrumentedClasses.add(className);
+	            
 	            return ct.toBytecode();
         	}
         }
         catch (Throwable t) {
-            t.printStackTrace();
+        	t.printStackTrace();
         }
         
         return bytes;

@@ -23,7 +23,7 @@ package com.hazelcast.aware.domain.model.config;
  * 		GitHub   : https://github.com/serkan-ozal
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
-public class HazelcastAwareMapFieldConfig implements HazelcastAwareConfig {
+public class HazelcastAwareMapFieldConfig implements HazelcastAwareConfig<HazelcastAwareMapFieldConfig> {
 
 	private String mapName;
 	
@@ -34,5 +34,5 @@ public class HazelcastAwareMapFieldConfig implements HazelcastAwareConfig {
 	public void setMapName(String mapName) {
 		this.mapName = mapName;
 	}
-	
+
 }

@@ -16,13 +16,23 @@
 
 package com.hazelcast.aware.config.provider.annotation;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.hazelcast.aware.config.provider.ConfigProvider;
+import com.hazelcast.aware.domain.builder.config.HazelcastAwareClassConfigBuilder;
+import com.hazelcast.aware.domain.builder.config.HazelcastAwareFieldConfigBuilder;
+import com.hazelcast.aware.domain.builder.config.HazelcastAwareMapFieldConfigBuilder;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareClassConfig;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareFieldConfig;
+import com.hazelcast.aware.domain.model.config.HazelcastAwareMapFieldConfig;
+import com.hazelcast.aware.util.ReflectionUtil;
+import com.hazelcast.logging.ILogger;
+import com.hazelcast.logging.Logger;
 
 /**
  * @author Serkan ÖZAL
@@ -33,9 +43,11 @@ import com.hazelcast.aware.domain.model.config.HazelcastAwareFieldConfig;
  */
 public class AnnotationBasedConfigProvider implements ConfigProvider {
 
-	private Map<Field, HazelcastAwareFieldConfig> fieldConfigMap = 
+	protected final ILogger logger = Logger.getLogger(getClass());
+	
+	protected Map<Field, HazelcastAwareFieldConfig> fieldConfigMap = 
 				new ConcurrentHashMap<Field, HazelcastAwareFieldConfig>();
-	private Map<Class<?>, HazelcastAwareClassConfig> classConfigMap = 
+	protected Map<Class<?>, HazelcastAwareClassConfig> classConfigMap = 
 				new ConcurrentHashMap<Class<?>, HazelcastAwareClassConfig>();
 	
 	@Override
@@ -54,7 +66,43 @@ public class AnnotationBasedConfigProvider implements ConfigProvider {
 	}
 	
 	protected HazelcastAwareFieldConfig findHazelcastAwareFieldConfig(Field field) {
-		return null;
+		field.setAccessible(true);
+		Annotation[] fieldAnnotations = field.getAnnotations();
+		boolean isHazelcastAwareField = false;
+		for (Annotation a : fieldAnnotations) {
+			if (a.annotationType().isAnnotationPresent(HazelcastAwareAnnotation.class)) {
+				isHazelcastAwareField = true;
+				break;
+			}
+		}
+		HazelcastAwareField haf = field.getAnnotation(HazelcastAwareField.class);
+		String instanceName = haf != null ? haf.instanceName() : null;
+		if (isHazelcastAwareField) {
+			return 
+				new HazelcastAwareFieldConfigBuilder().
+						ownerClass(field.getDeclaringClass()).
+						field(field).
+						instanceName(instanceName).
+						mapFieldConfig(findHazelcastAwareMapFieldConfig(field)).
+					build();
+		}
+		else {
+			return null;
+		}
+	}
+	
+	protected HazelcastAwareMapFieldConfig findHazelcastAwareMapFieldConfig(Field field) {
+		field.setAccessible(true);
+		HazelcastAwareMapField hamf = field.getAnnotation(HazelcastAwareMapField.class);
+		if (hamf != null) {
+			return
+				new HazelcastAwareMapFieldConfigBuilder().
+						mapName(hamf.mapName()).
+					build();
+		}
+		else {
+			return null;
+		}	
 	}
 
 	@Override
@@ -68,7 +116,27 @@ public class AnnotationBasedConfigProvider implements ConfigProvider {
 	}
 	
 	protected HazelcastAwareClassConfig findHazelcastAwareClassConfig(Class<?> clazz) {
-		return null;
+		HazelcastAwareClass hac = clazz.getAnnotation(HazelcastAwareClass.class);
+		if (hac != null) {
+			List<Field> fields = ReflectionUtil.getAllFields(clazz);
+			List<HazelcastAwareFieldConfig> fieldConfigs = new ArrayList<HazelcastAwareFieldConfig>();
+			for (Field field : fields) {
+				field.setAccessible(true);
+				HazelcastAwareFieldConfig fieldConfig = getHazelcastAwareFieldConfig(field);
+				if (fieldConfig != null) {
+					fieldConfigs.add(fieldConfig);
+				}
+			}
+			return 
+				new HazelcastAwareClassConfigBuilder().
+						clazz(clazz).
+						instanceName(hac.instanceName()).
+						fieldConfigs(fieldConfigs).
+					build();
+		}
+		else {
+			return null;
+		}	
 	}
 	
 }

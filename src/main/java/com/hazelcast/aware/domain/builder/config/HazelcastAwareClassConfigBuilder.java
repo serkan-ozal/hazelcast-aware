@@ -32,10 +32,16 @@ import com.hazelcast.aware.domain.model.config.HazelcastAwareFieldConfig;
 public class HazelcastAwareClassConfigBuilder implements Builder<HazelcastAwareClassConfig> {
 
 	private Class<?> clazz;
+	private String instanceName;
 	private List<HazelcastAwareFieldConfig> fieldConfigs;
 	
 	public HazelcastAwareClassConfigBuilder clazz(Class<?> clazz) {
 		this.clazz = clazz;
+		return this;
+	}
+	
+	public HazelcastAwareClassConfigBuilder instanceName(String instanceName) {
+		this.instanceName = instanceName;
 		return this;
 	}
 	
@@ -48,6 +54,7 @@ public class HazelcastAwareClassConfigBuilder implements Builder<HazelcastAwareC
 	public HazelcastAwareClassConfig build() {
 		HazelcastAwareClassConfig config = new HazelcastAwareClassConfig();
 		config.setClazz(clazz);
+		config.setInstanceName(instanceName);
 		config.setFieldConfigs(fieldConfigs);
 		return config;
 	}

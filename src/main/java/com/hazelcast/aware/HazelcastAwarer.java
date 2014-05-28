@@ -16,7 +16,12 @@
 
 package com.hazelcast.aware;
 
+import java.util.logging.Level;
+
 import com.hazelcast.aware.instrument.HazelcastAwareClassTransformer;
+import com.hazelcast.aware.scanner.HazelcastAwareScannerFactory;
+import com.hazelcast.logging.ILogger;
+import com.hazelcast.logging.Logger;
 
 import tr.com.serkanozal.jillegal.agent.JillegalAgent;
 
@@ -29,16 +34,52 @@ import tr.com.serkanozal.jillegal.agent.JillegalAgent;
  */
 public class HazelcastAwarer {
 
+	protected static final ILogger logger = Logger.getLogger(HazelcastAwarer.class);
+	
 	static {
 		JillegalAgent.init();
 	}
 	
-	private static volatile boolean integrated = false;
+	private static volatile boolean awared = false;
 	
 	public synchronized static void makeHazelcastAware() {
-		if (!integrated) {
+		if (!awared) {
 			JillegalAgent.getInstrumentation().addTransformer(new HazelcastAwareClassTransformer(), true);
-			// TODO Find and retransform all Hazelcast aware classes
+
+			Class<?>[] hazelcastAwareClasses = 
+					HazelcastAwareScannerFactory.getHazelcastAwareScanner().getHazelcastAwareClasses();
+			
+			if (hazelcastAwareClasses != null && hazelcastAwareClasses.length > 0) { 
+				StringBuilder hazelcastAwareClassesBuilder = new StringBuilder();
+				for (int i = 0; i < hazelcastAwareClasses.length; i++) {
+					if (i > 0) {
+						hazelcastAwareClassesBuilder.append(", ");
+					}
+					hazelcastAwareClassesBuilder.append(hazelcastAwareClasses[i].getName());
+				}
+				
+				logger.log(
+						Level.INFO, 
+						"These classes will be Hazelcast-Aware: " + hazelcastAwareClassesBuilder.toString()); 
+				
+				/*
+				try {
+					JillegalAgent.getInstrumentation().retransformClasses(hazelcastAwareClasses);
+				} 
+				catch (Throwable t) {
+					logger.log(
+							Level.ALL, 
+							"Error occured while retransforming Hazelcast-Aware classes: " + 
+								hazelcastAwareClassesBuilder,
+							t);
+				}
+				*/
+			}
+			else {
+				logger.log(Level.INFO, "There is no Hazelcast-Aware class at classpath"); 
+			}
+			
+			awared = true;
 		}	
 	}
 	

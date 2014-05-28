@@ -21,7 +21,9 @@
 		<jillegal.agent.version>1.1.0-RELEASE</jillegal.agent.version>
 		<javassist.version>3.17.1-GA</javassist.version>
 		<corn.cps.version>1.1.7</corn.cps.version>
-		
+		<junit-version>4.8.2</junit-version>
+		<easymock-version>3.0</easymock-version>
+		 
     </properties>
   
   	<build>
@@ -75,6 +77,18 @@
 			<groupId>net.sf.corn</groupId>
 			<artifactId>corn-cps</artifactId>
 			<version>${corn.cps.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit-version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+			<version>${easymock-version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
     

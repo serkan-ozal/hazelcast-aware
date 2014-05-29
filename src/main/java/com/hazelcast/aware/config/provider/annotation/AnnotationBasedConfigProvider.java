@@ -21,16 +21,28 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 
 import com.hazelcast.aware.config.provider.ConfigProvider;
 import com.hazelcast.aware.domain.builder.config.HazelcastAwareClassConfigBuilder;
 import com.hazelcast.aware.domain.builder.config.HazelcastAwareFieldConfigBuilder;
+import com.hazelcast.aware.domain.builder.config.HazelcastAwareListFieldConfigBuilder;
 import com.hazelcast.aware.domain.builder.config.HazelcastAwareMapFieldConfigBuilder;
+import com.hazelcast.aware.domain.builder.config.HazelcastAwareQueueFieldConfigBuilder;
+import com.hazelcast.aware.domain.builder.config.HazelcastAwareSetFieldConfigBuilder;
+import com.hazelcast.aware.domain.builder.config.HazelcastAwareTopicFieldConfigBuilder;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareClassConfig;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareFieldConfig;
+import com.hazelcast.aware.domain.model.config.HazelcastAwareListFieldConfig;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareMapFieldConfig;
+import com.hazelcast.aware.domain.model.config.HazelcastAwareQueueFieldConfig;
+import com.hazelcast.aware.domain.model.config.HazelcastAwareSetFieldConfig;
+import com.hazelcast.aware.domain.model.config.HazelcastAwareTopicFieldConfig;
 import com.hazelcast.aware.util.ReflectionUtil;
+import com.hazelcast.core.ITopic;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
 
@@ -84,6 +96,10 @@ public class AnnotationBasedConfigProvider implements ConfigProvider {
 						field(field).
 						instanceName(instanceName).
 						mapFieldConfig(findHazelcastAwareMapFieldConfig(field)).
+						listFieldConfig(findHazelcastAwareListFieldConfig(field)).
+						setFieldConfig(findHazelcastAwareSetFieldConfig(field)).
+						queueFieldConfig(findHazelcastAwareQueueFieldConfig(field)).
+						topicFieldConfig(findHazelcastAwareTopicFieldConfig(field)).
 					build();
 		}
 		else {
@@ -95,10 +111,116 @@ public class AnnotationBasedConfigProvider implements ConfigProvider {
 		field.setAccessible(true);
 		HazelcastAwareMapField hamf = field.getAnnotation(HazelcastAwareMapField.class);
 		if (hamf != null) {
-			return
-				new HazelcastAwareMapFieldConfigBuilder().
-						mapName(hamf.mapName()).
-					build();
+			if (Map.class.isAssignableFrom(field.getType())) {
+				return
+					new HazelcastAwareMapFieldConfigBuilder().
+							name(hamf.name()).
+						build();
+			}
+			else {
+				logger.log(
+						Level.WARNING,
+						"Since type of field " + field.getName() + 
+							" in class " + field.getDeclaringClass().getName() + 
+							" is not assignable to Map, map field configuration will be ignored !");
+				return null;
+			}
+		}
+		else {
+			return null;
+		}	
+	}
+	
+	protected HazelcastAwareListFieldConfig findHazelcastAwareListFieldConfig(Field field) {
+		field.setAccessible(true);
+		HazelcastAwareListField hamf = field.getAnnotation(HazelcastAwareListField.class);
+		if (hamf != null) {
+			if (List.class.isAssignableFrom(field.getType())) {
+				return
+					new HazelcastAwareListFieldConfigBuilder().
+							name(hamf.name()).
+						build();
+			}
+			else {
+				logger.log(
+						Level.WARNING,
+						"Since type of field " + field.getName() + 
+							" in class " + field.getDeclaringClass().getName() + 
+							" is not assignable to List, list field configuration will be ignored !");
+				return null;
+			}	
+		}
+		else {
+			return null;
+		}	
+	}
+	
+	protected HazelcastAwareSetFieldConfig findHazelcastAwareSetFieldConfig(Field field) {
+		field.setAccessible(true);
+		HazelcastAwareSetField hamf = field.getAnnotation(HazelcastAwareSetField.class);
+		if (hamf != null) {
+			if (Set.class.isAssignableFrom(field.getType())) {
+				return
+					new HazelcastAwareSetFieldConfigBuilder().
+							name(hamf.name()).
+						build();
+			}
+			else {
+				logger.log(
+						Level.WARNING,
+						"Since type of field " + field.getName() + 
+							" in class " + field.getDeclaringClass().getName() + 
+							" is not assignable to Set, set field configuration will be ignored !");
+				return null;
+			}		
+		}
+		else {
+			return null;
+		}	
+	}
+	
+	protected HazelcastAwareQueueFieldConfig findHazelcastAwareQueueFieldConfig(Field field) {
+		field.setAccessible(true);
+		HazelcastAwareQueueField hamf = field.getAnnotation(HazelcastAwareQueueField.class);
+		if (hamf != null) {
+			if (Queue.class.isAssignableFrom(field.getType())) {
+				return
+					new HazelcastAwareQueueFieldConfigBuilder().
+							name(hamf.name()).
+						build();
+			}	
+			else {
+				logger.log(
+						Level.WARNING,
+						"Since type of field " + field.getName() + 
+							" in class " + field.getDeclaringClass().getName() + 
+							" is not assignable to Queue, queue field configuration will be ignored !");
+				return null;
+			}			
+		}
+		else {
+			return null;
+		}	
+	}
+	
+	protected HazelcastAwareTopicFieldConfig findHazelcastAwareTopicFieldConfig(Field field) {
+		field.setAccessible(true);
+		HazelcastAwareTopicField hamf = field.getAnnotation(HazelcastAwareTopicField.class);
+		if (hamf != null) {
+			if (ITopic.class.isAssignableFrom(field.getType())) {
+				return
+					new HazelcastAwareTopicFieldConfigBuilder().
+							name(hamf.name()).
+						build();
+			}	
+			else {
+				logger.log(
+						Level.WARNING,
+						"Since type of field " + field.getName() + 
+							" in class " + field.getDeclaringClass().getName() + 
+							" is not assignable to ITopic, topic field configuration will be ignored !");
+				return null;
+			}			
 		}
 		else {
 			return null;

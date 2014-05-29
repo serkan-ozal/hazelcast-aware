@@ -33,6 +33,6 @@ import java.lang.annotation.Target;
 @HazelcastAwareAnnotation
 public @interface HazelcastAwareMapField {
 	
-	String mapName() default "";
+	String name() default "";
 	
 }

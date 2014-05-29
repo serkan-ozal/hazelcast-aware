@@ -28,17 +28,17 @@ import com.hazelcast.aware.domain.model.config.HazelcastAwareMapFieldConfig;
  */
 public class HazelcastAwareMapFieldConfigBuilder implements Builder<HazelcastAwareMapFieldConfig> {
 
-	private String mapName;
+	private String name;
 	
-	public HazelcastAwareMapFieldConfigBuilder mapName(String mapName) {
-		this.mapName = mapName;
+	public HazelcastAwareMapFieldConfigBuilder name(String name) {
+		this.name = name;
 		return this;
 	}
 	
 	@Override
 	public HazelcastAwareMapFieldConfig build() {
 		HazelcastAwareMapFieldConfig config = new HazelcastAwareMapFieldConfig();
-		config.setMapName(mapName);
+		config.setName(name);
 		return config;
 	}
 	

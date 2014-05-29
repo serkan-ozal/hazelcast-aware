@@ -20,7 +20,11 @@ import java.lang.reflect.Field;
 
 import com.hazelcast.aware.domain.builder.Builder;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareFieldConfig;
+import com.hazelcast.aware.domain.model.config.HazelcastAwareListFieldConfig;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareMapFieldConfig;
+import com.hazelcast.aware.domain.model.config.HazelcastAwareQueueFieldConfig;
+import com.hazelcast.aware.domain.model.config.HazelcastAwareSetFieldConfig;
+import com.hazelcast.aware.domain.model.config.HazelcastAwareTopicFieldConfig;
 
 /**
  * @author Serkan ÖZAL
@@ -35,6 +39,10 @@ public class HazelcastAwareFieldConfigBuilder implements Builder<HazelcastAwareF
 	private Field field;
 	private String instanceName;
 	private HazelcastAwareMapFieldConfig mapFieldConfig;
+	private HazelcastAwareListFieldConfig listFieldConfig;
+	private HazelcastAwareSetFieldConfig setFieldConfig;
+	private HazelcastAwareQueueFieldConfig queueFieldConfig;
+	private HazelcastAwareTopicFieldConfig topicFieldConfig;
 	
 	public HazelcastAwareFieldConfigBuilder ownerClass(Class<?> ownerClass) {
 		this.ownerClass = ownerClass;
@@ -56,6 +64,26 @@ public class HazelcastAwareFieldConfigBuilder implements Builder<HazelcastAwareF
 		return this;
 	}
 	
+	public HazelcastAwareFieldConfigBuilder listFieldConfig(HazelcastAwareListFieldConfig listFieldConfig) {
+		this.listFieldConfig = listFieldConfig;
+		return this;
+	}
+	
+	public HazelcastAwareFieldConfigBuilder setFieldConfig(HazelcastAwareSetFieldConfig setFieldConfig) {
+		this.setFieldConfig = setFieldConfig;
+		return this;
+	}
+	
+	public HazelcastAwareFieldConfigBuilder queueFieldConfig(HazelcastAwareQueueFieldConfig queueFieldConfig) {
+		this.queueFieldConfig = queueFieldConfig;
+		return this;
+	}
+	
+	public HazelcastAwareFieldConfigBuilder topicFieldConfig(HazelcastAwareTopicFieldConfig topicFieldConfig) {
+		this.topicFieldConfig = topicFieldConfig;
+		return this;
+	}
+	
 	@Override
 	public HazelcastAwareFieldConfig build() {
 		HazelcastAwareFieldConfig config = new HazelcastAwareFieldConfig();
@@ -63,6 +91,10 @@ public class HazelcastAwareFieldConfigBuilder implements Builder<HazelcastAwareF
 		config.setField(field);
 		config.setInstanceName(instanceName);
 		config.setMapFieldConfig(mapFieldConfig);
+		config.setListFieldConfig(listFieldConfig);
+		config.setSetFieldConfig(setFieldConfig);
+		config.setQueueFieldConfig(queueFieldConfig);
+		config.setTopicFieldConfig(topicFieldConfig);
 		return config;
 	}
 	

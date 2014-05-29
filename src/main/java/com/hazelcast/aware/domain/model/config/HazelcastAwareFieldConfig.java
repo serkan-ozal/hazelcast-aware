@@ -33,6 +33,10 @@ public class HazelcastAwareFieldConfig implements HazelcastAwareMergeableConfig<
 	private Field field;
 	private String instanceName;
 	private HazelcastAwareMapFieldConfig mapFieldConfig;
+	private HazelcastAwareListFieldConfig listFieldConfig;
+	private HazelcastAwareSetFieldConfig setFieldConfig;
+	private HazelcastAwareQueueFieldConfig queueFieldConfig;
+	private HazelcastAwareTopicFieldConfig topicFieldConfig;
 	
 	public Class<?> getOwnerClass() {
 		return ownerClass;
@@ -66,6 +70,38 @@ public class HazelcastAwareFieldConfig implements HazelcastAwareMergeableConfig<
 		this.mapFieldConfig = mapFieldConfig;
 	}
 	
+	public HazelcastAwareListFieldConfig getListFieldConfig() {
+		return listFieldConfig;
+	}
+
+	public void setListFieldConfig(HazelcastAwareListFieldConfig listFieldConfig) {
+		this.listFieldConfig = listFieldConfig;
+	}
+
+	public HazelcastAwareSetFieldConfig getSetFieldConfig() {
+		return setFieldConfig;
+	}
+
+	public void setSetFieldConfig(HazelcastAwareSetFieldConfig setFieldConfig) {
+		this.setFieldConfig = setFieldConfig;
+	}
+
+	public HazelcastAwareQueueFieldConfig getQueueFieldConfig() {
+		return queueFieldConfig;
+	}
+
+	public void setQueueFieldConfig(HazelcastAwareQueueFieldConfig queueFieldConfig) {
+		this.queueFieldConfig = queueFieldConfig;
+	}
+
+	public HazelcastAwareTopicFieldConfig getTopicFieldConfig() {
+		return topicFieldConfig;
+	}
+
+	public void setTopicFieldConfig(HazelcastAwareTopicFieldConfig topicFieldConfig) {
+		this.topicFieldConfig = topicFieldConfig;
+	}
+
 	@Override
 	public HazelcastAwareFieldConfig merge(HazelcastAwareFieldConfig config) {
 		if (ownerClass == null) {
@@ -79,6 +115,18 @@ public class HazelcastAwareFieldConfig implements HazelcastAwareMergeableConfig<
 		}
 		if (mapFieldConfig == null) {
 			mapFieldConfig = config.mapFieldConfig;
+		}
+		if (listFieldConfig == null) {
+			listFieldConfig = config.listFieldConfig;
+		}
+		if (setFieldConfig == null) {
+			setFieldConfig = config.setFieldConfig;
+		}
+		if (queueFieldConfig == null) {
+			queueFieldConfig = config.queueFieldConfig;
+		}
+		if (topicFieldConfig == null) {
+			topicFieldConfig = config.topicFieldConfig;
 		}
 		return this;
 	}

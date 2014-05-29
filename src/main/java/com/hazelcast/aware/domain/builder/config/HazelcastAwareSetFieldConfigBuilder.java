@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-package com.hazelcast.aware.domain.model.config;
+package com.hazelcast.aware.domain.builder.config;
+
+import com.hazelcast.aware.domain.builder.Builder;
+import com.hazelcast.aware.domain.model.config.HazelcastAwareSetFieldConfig;
 
 /**
  * @author Serkan ÖZAL
@@ -23,16 +26,20 @@ package com.hazelcast.aware.domain.model.config;
  * 		GitHub   : https://github.com/serkan-ozal
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
-public class HazelcastAwareMapFieldConfig implements HazelcastAwareConfig<HazelcastAwareMapFieldConfig> {
+public class HazelcastAwareSetFieldConfigBuilder implements Builder<HazelcastAwareSetFieldConfig> {
 
 	private String name;
 	
-	public String getName() {
-		return name;
+	public HazelcastAwareSetFieldConfigBuilder name(String name) {
+		this.name = name;
+		return this;
 	}
 	
-	public void setName(String name) {
-		this.name = name;
+	@Override
+	public HazelcastAwareSetFieldConfig build() {
+		HazelcastAwareSetFieldConfig config = new HazelcastAwareSetFieldConfig();
+		config.setName(name);
+		return config;
 	}
-
+	
 }

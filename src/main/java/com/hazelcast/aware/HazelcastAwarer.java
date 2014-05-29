@@ -16,10 +16,9 @@
 
 package com.hazelcast.aware;
 
-import java.lang.instrument.ClassDefinition;
 import java.util.logging.Level;
 
-import com.hazelcast.aware.instrument.HazelcastAwareClassTransformer;
+import com.hazelcast.aware.instrument.HazelcastAwareClassRedefiner;
 import com.hazelcast.aware.scanner.HazelcastAwareScannerFactory;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
@@ -35,18 +34,30 @@ import tr.com.serkanozal.jillegal.agent.JillegalAgent;
  */
 public class HazelcastAwarer {
 
-	protected static final ILogger logger = Logger.getLogger(HazelcastAwarer.class);
+	private static final ILogger logger = Logger.getLogger(HazelcastAwarer.class);
+	private static final HazelcastAwareClassRedefiner classRedefiner = new HazelcastAwareClassRedefiner();
+	
+	private static volatile boolean awared = false;
 	
 	static {
 		JillegalAgent.init();
 	}
-	
-	private static volatile boolean awared = false;
-	
+
 	public synchronized static void makeHazelcastAware() {
 		if (!awared) {
+			
+			logger.log(
+					Level.INFO, 
+					"Scanning started for Hazelcast-Aware classes ..."); 
+			long start = System.currentTimeMillis();
 			Class<?>[] hazelcastAwareClasses = 
-					HazelcastAwareScannerFactory.getHazelcastAwareScanner().getHazelcastAwareClasses();
+					HazelcastAwareScannerFactory.
+						getHazelcastAwareScanner().getHazelcastAwareClasses();
+			long finish = System.currentTimeMillis();
+			logger.log(
+					Level.INFO, 
+					"Scanning finished for Hazelcast-Aware classes in " + 
+							(finish - start) + " milliseconds"); 
 			
 			if (hazelcastAwareClasses != null && hazelcastAwareClasses.length > 0) { 
 				StringBuilder hazelcastAwareClassesBuilder = new StringBuilder();
@@ -59,25 +70,22 @@ public class HazelcastAwarer {
 				
 				logger.log(
 						Level.INFO, 
-						"These classes will be Hazelcast-Aware: " + hazelcastAwareClassesBuilder.toString()); 
+						"These classes will be Hazelcast-Aware: " + 
+								hazelcastAwareClassesBuilder.toString()); 
 				
-				HazelcastAwareClassTransformer transformer = new HazelcastAwareClassTransformer();
 				try {
 					for (Class<?> hazelcastAwareClass : hazelcastAwareClasses) {
-						byte[] instrumentedClassData = transformer.instrument(hazelcastAwareClass);
-						System.out.println(instrumentedClassData);
-						if (instrumentedClassData != null) {
-							JillegalAgent.getInstrumentation().
-								redefineClasses(
-										new ClassDefinition(hazelcastAwareClass, instrumentedClassData));
-						}	
+						classRedefiner.redefine(hazelcastAwareClass);
+						logger.log(
+								Level.INFO, 
+								"Now " + hazelcastAwareClass.getName() + " is a Hazelcast-Aware class"); 
 					}	
 				} 
 				catch (Throwable t) {
 					t.printStackTrace();
 					logger.log(
 							Level.ALL, 
-							"Error occured while retransforming Hazelcast-Aware classes: " + 
+							"Error occured while instrumenting Hazelcast-Aware classes: " + 
 								hazelcastAwareClassesBuilder,
 							t);
 				}

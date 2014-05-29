@@ -23,15 +23,6 @@ import java.security.ProtectionDomain;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.hazelcast.aware.config.provider.annotation.HazelcastAwareClass;
-import com.hazelcast.aware.util.HazelcastAwareUtil;
-
-import javassist.ClassClassPath;
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtConstructor;
-import javassist.NotFoundException;
-
 /**
  * @author Serkan ÖZAL
  * 
@@ -39,26 +30,11 @@ import javassist.NotFoundException;
  * 		GitHub   : https://github.com/serkan-ozal
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
-public class HazelcastAwareClassTransformer implements ClassFileTransformer {
+public class HazelcastAwareClassTransformer extends HazelcastAwareClassInstrumenter implements ClassFileTransformer {
 
-	protected static final Set<String> alreadyInstrumentedClasses = new HashSet<String>();
-	
-	protected ClassPool cp = ClassPool.getDefault();
-	
+	protected static final Set<String> transformedClasses = new HashSet<String>();
+
 	protected volatile boolean active = false;
-	
-	public HazelcastAwareClassTransformer() {
-		init();
-	}
-	
-	protected void init() {
-		 cp.importPackage(HazelcastAwareUtil.class.getPackage().getName());
-         cp.appendClassPath(new ClassClassPath(HazelcastAwareUtil.class));
-	}
-
-	protected boolean isHazelcastAware(CtClass clazz) {
-		return clazz.hasAnnotation(HazelcastAwareClass.class);
-	}
 	
 	public boolean isActive() {
 		return active;
@@ -73,11 +49,11 @@ public class HazelcastAwareClassTransformer implements ClassFileTransformer {
 		if (!active) {
 			return bytes;
 		}
-		if (alreadyInstrumentedClasses.contains(className)) {
+		if (transformedClasses.contains(className)) {
 			return bytes;
 		}
         try {
-        	byte[] instrumentedBytes = instrumentInternal(cp.makeClass(new ByteArrayInputStream(bytes), false));
+        	byte[] instrumentedBytes = instrument(cp.makeClass(new ByteArrayInputStream(bytes), false));
         	if (instrumentedBytes != null) {
         		return instrumentedBytes;
         	}
@@ -85,40 +61,7 @@ public class HazelcastAwareClassTransformer implements ClassFileTransformer {
         catch (Throwable t) {
         	t.printStackTrace();
         }
-        
         return bytes;
     }
-	
-	public byte[] instrument(Class<?> classBeingRedefined) {
-		try {
-			return instrumentInternal(cp.get(classBeingRedefined.getName()));
-		} 
-		catch (NotFoundException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	protected byte[] instrumentInternal(CtClass ct) {
-		System.out.println(ct);
-		try {
-	    	if (isHazelcastAware(ct)) {
-	            System.out.println("[INFO] : " + "Class " + ct.getName() + " is being instrumented ...");
-	            
-	            CtConstructor[] constructors = ct.getConstructors();
-	            
-	            for (CtConstructor c : constructors) {
-	            	c.insertAfter("HazelcastAwareUtil.injectHazelcast(this);");
-	            }
-	            
-	            return ct.toBytecode();
-	    	}
-		}
-		catch (Throwable t) {
-			t.printStackTrace();
-		}
-		
-		return null;
-	}
-	
+
 }

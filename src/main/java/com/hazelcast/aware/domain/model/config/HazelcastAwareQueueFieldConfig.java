@@ -23,7 +23,7 @@ package com.hazelcast.aware.domain.model.config;
  * 		GitHub   : https://github.com/serkan-ozal
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
-public class HazelcastAwareMapFieldConfig implements HazelcastAwareConfig<HazelcastAwareMapFieldConfig> {
+public class HazelcastAwareQueueFieldConfig implements HazelcastAwareConfig<HazelcastAwareQueueFieldConfig> {
 
 	private String name;
 	

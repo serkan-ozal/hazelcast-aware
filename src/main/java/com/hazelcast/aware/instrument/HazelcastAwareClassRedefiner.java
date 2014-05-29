@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-package com.hazelcast.aware.domain.model.config;
+package com.hazelcast.aware.instrument;
+
+import java.lang.instrument.ClassDefinition;
+
+import tr.com.serkanozal.jillegal.agent.JillegalAgent;
 
 /**
  * @author Serkan ÖZAL
@@ -23,16 +27,19 @@ package com.hazelcast.aware.domain.model.config;
  * 		GitHub   : https://github.com/serkan-ozal
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
-public class HazelcastAwareMapFieldConfig implements HazelcastAwareConfig<HazelcastAwareMapFieldConfig> {
+public class HazelcastAwareClassRedefiner extends HazelcastAwareClassInstrumenter {
 
-	private String name;
-	
-	public String getName() {
-		return name;
+	public void redefine(Class<?> classBeingRedefined) {
+		try {
+			JillegalAgent.getInstrumentation().
+				redefineClasses(
+					new ClassDefinition(
+							classBeingRedefined, 
+							instrument(cp.get(classBeingRedefined.getName()))));
+		} 
+		catch (Throwable t) {
+			t.printStackTrace();
+		} 
 	}
 	
-	public void setName(String name) {
-		this.name = name;
-	}
-
 }

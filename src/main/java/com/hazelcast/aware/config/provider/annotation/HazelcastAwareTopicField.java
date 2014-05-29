@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-package com.hazelcast.aware.domain.model.config;
+package com.hazelcast.aware.config.provider.annotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author Serkan ÖZAL
@@ -23,16 +28,11 @@ package com.hazelcast.aware.domain.model.config;
  * 		GitHub   : https://github.com/serkan-ozal
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
-public class HazelcastAwareMapFieldConfig implements HazelcastAwareConfig<HazelcastAwareMapFieldConfig> {
-
-	private String name;
+@Target({ElementType.FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+@HazelcastAwareAnnotation
+public @interface HazelcastAwareTopicField {
 	
-	public String getName() {
-		return name;
-	}
+	String name() default "";
 	
-	public void setName(String name) {
-		this.name = name;
-	}
-
 }

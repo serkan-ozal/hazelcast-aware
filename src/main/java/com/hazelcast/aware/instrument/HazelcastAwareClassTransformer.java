@@ -17,7 +17,6 @@
 package com.hazelcast.aware.instrument;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
@@ -31,6 +30,7 @@ import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtConstructor;
+import javassist.NotFoundException;
 
 /**
  * @author Serkan ÖZAL
@@ -45,6 +45,8 @@ public class HazelcastAwareClassTransformer implements ClassFileTransformer {
 	
 	protected ClassPool cp = ClassPool.getDefault();
 	
+	protected volatile boolean active = false;
+	
 	public HazelcastAwareClassTransformer() {
 		init();
 	}
@@ -53,37 +55,31 @@ public class HazelcastAwareClassTransformer implements ClassFileTransformer {
 		 cp.importPackage(HazelcastAwareUtil.class.getPackage().getName());
          cp.appendClassPath(new ClassClassPath(HazelcastAwareUtil.class));
 	}
-    
-	protected CtClass buildClass(byte[] bytes) throws IOException, RuntimeException {
-        return cp.makeClass(new ByteArrayInputStream(bytes));
-    }
-	
+
 	protected boolean isHazelcastAware(CtClass clazz) {
 		return clazz.hasAnnotation(HazelcastAwareClass.class);
 	}
 	
+	public boolean isActive() {
+		return active;
+	}
+	
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+	
 	public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, 
 			ProtectionDomain domain, byte[] bytes) throws IllegalClassFormatException {
+		if (!active) {
+			return bytes;
+		}
 		if (alreadyInstrumentedClasses.contains(className)) {
 			return bytes;
 		}
         try {
-        	CtClass ct = buildClass(bytes);
-        	if (isHazelcastAware(ct)) {
-	            System.out.println("[INFO] : " + "Class " + className + " is being instrumented ...");
-	            
-	            // Ensure that there will be at least one class initializer (or constructor)
-	            ct.makeClassInitializer();
-	            
-	            CtConstructor[] constructors = ct.getConstructors();
-	            
-	            for (CtConstructor c : constructors) {
-	            	c.insertAfter("HazelcastAwareUtil.injectHazelcast(this);");
-	            }
-	            
-	            alreadyInstrumentedClasses.add(className);
-	            
-	            return ct.toBytecode();
+        	byte[] instrumentedBytes = instrumentInternal(cp.makeClass(new ByteArrayInputStream(bytes), false));
+        	if (instrumentedBytes != null) {
+        		return instrumentedBytes;
         	}
         }
         catch (Throwable t) {
@@ -92,5 +88,37 @@ public class HazelcastAwareClassTransformer implements ClassFileTransformer {
         
         return bytes;
     }
+	
+	public byte[] instrument(Class<?> classBeingRedefined) {
+		try {
+			return instrumentInternal(cp.get(classBeingRedefined.getName()));
+		} 
+		catch (NotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	protected byte[] instrumentInternal(CtClass ct) {
+		System.out.println(ct);
+		try {
+	    	if (isHazelcastAware(ct)) {
+	            System.out.println("[INFO] : " + "Class " + ct.getName() + " is being instrumented ...");
+	            
+	            CtConstructor[] constructors = ct.getConstructors();
+	            
+	            for (CtConstructor c : constructors) {
+	            	c.insertAfter("HazelcastAwareUtil.injectHazelcast(this);");
+	            }
+	            
+	            return ct.toBytecode();
+	    	}
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
+		
+		return null;
+	}
 	
 }

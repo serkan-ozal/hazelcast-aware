@@ -16,6 +16,7 @@
 
 package com.hazelcast.aware;
 
+import java.lang.instrument.ClassDefinition;
 import java.util.logging.Level;
 
 import com.hazelcast.aware.instrument.HazelcastAwareClassTransformer;
@@ -44,8 +45,6 @@ public class HazelcastAwarer {
 	
 	public synchronized static void makeHazelcastAware() {
 		if (!awared) {
-			JillegalAgent.getInstrumentation().addTransformer(new HazelcastAwareClassTransformer(), true);
-
 			Class<?>[] hazelcastAwareClasses = 
 					HazelcastAwareScannerFactory.getHazelcastAwareScanner().getHazelcastAwareClasses();
 			
@@ -62,18 +61,26 @@ public class HazelcastAwarer {
 						Level.INFO, 
 						"These classes will be Hazelcast-Aware: " + hazelcastAwareClassesBuilder.toString()); 
 				
-				/*
+				HazelcastAwareClassTransformer transformer = new HazelcastAwareClassTransformer();
 				try {
-					JillegalAgent.getInstrumentation().retransformClasses(hazelcastAwareClasses);
+					for (Class<?> hazelcastAwareClass : hazelcastAwareClasses) {
+						byte[] instrumentedClassData = transformer.instrument(hazelcastAwareClass);
+						System.out.println(instrumentedClassData);
+						if (instrumentedClassData != null) {
+							JillegalAgent.getInstrumentation().
+								redefineClasses(
+										new ClassDefinition(hazelcastAwareClass, instrumentedClassData));
+						}	
+					}	
 				} 
 				catch (Throwable t) {
+					t.printStackTrace();
 					logger.log(
 							Level.ALL, 
 							"Error occured while retransforming Hazelcast-Aware classes: " + 
 								hazelcastAwareClassesBuilder,
 							t);
 				}
-				*/
 			}
 			else {
 				logger.log(Level.INFO, "There is no Hazelcast-Aware class at classpath"); 

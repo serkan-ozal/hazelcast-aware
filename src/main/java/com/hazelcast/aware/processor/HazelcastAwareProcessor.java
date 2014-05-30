@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-package com.hazelcast.aware.config.provider;
+package com.hazelcast.aware.processor;
 
-import java.lang.reflect.Field;
-import java.util.Set;
-
-import com.hazelcast.aware.domain.model.config.HazelcastAwareClassConfig;
-import com.hazelcast.aware.domain.model.config.HazelcastAwareFieldConfig;
+import com.hazelcast.aware.config.manager.ConfigManager;
 
 /**
  * @author Serkan ÖZAL
@@ -29,14 +25,13 @@ import com.hazelcast.aware.domain.model.config.HazelcastAwareFieldConfig;
  * 		GitHub   : https://github.com/serkan-ozal
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
-public interface ConfigProvider {
-
-	boolean isAvailable();
+public interface HazelcastAwareProcessor {
 	
-	Set<Class<?>> getHazelcastAwareClasses();
-	Set<Class<? extends HazelcastAwareConfigProvider>> getHazelcastAwareConfigProviderClasses();
+	int LOW_ORDER = Integer.MIN_VALUE;
+	int ORDER_DOESNT_MATTER = 0;
+	int HIGH_ORDER = Integer.MAX_VALUE;
 	
-	HazelcastAwareFieldConfig getHazelcastAwareFieldConfig(Field field);
-	HazelcastAwareClassConfig getHazelcastAwareClassConfig(Class<?> clazz);
+	int getOrder();
+	void process(ConfigManager configManager);
 	
 }

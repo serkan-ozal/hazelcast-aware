@@ -16,6 +16,8 @@
 
 package com.hazelcast.aware.scanner;
 
+import java.util.Set;
+
 /**
  * @author Serkan ÖZAL
  * 
@@ -25,6 +27,6 @@ package com.hazelcast.aware.scanner;
  */
 public interface HazelcastAwareScanner {
 	
-	Class<?>[] getHazelcastAwareClasses();
+	Set<Class<?>> getHazelcastAwareClasses();
 	
 }

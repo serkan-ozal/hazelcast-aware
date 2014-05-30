@@ -18,9 +18,11 @@ package com.hazelcast.aware.config.manager;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Set;
 
 import com.hazelcast.aware.config.DefaultConfigs;
 import com.hazelcast.aware.config.provider.ConfigProvider;
+import com.hazelcast.aware.config.provider.HazelcastAwareConfigProvider;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareClassConfig;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareFieldConfig;
 
@@ -38,6 +40,9 @@ public interface ConfigManager {
 	List<ConfigProvider> getAllConfigProviders();
 	
 	DefaultConfigs getDefaultConfigs();
+	
+	Set<Class<?>> getHazelcastAwareClasses();
+	Set<Class<? extends HazelcastAwareConfigProvider>> getHazelcastAwareConfigProviderClasses();
 	
 	HazelcastAwareFieldConfig getHazelcastAwareFieldConfig(Field field);
 	HazelcastAwareClassConfig getHazelcastAwareClassConfig(Class<?> clazz);

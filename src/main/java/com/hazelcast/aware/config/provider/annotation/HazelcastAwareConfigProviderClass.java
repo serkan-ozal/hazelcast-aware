@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package com.hazelcast.aware.config.provider;
+package com.hazelcast.aware.config.provider.annotation;
 
-import java.lang.reflect.Field;
-import java.util.Set;
-
-import com.hazelcast.aware.domain.model.config.HazelcastAwareClassConfig;
-import com.hazelcast.aware.domain.model.config.HazelcastAwareFieldConfig;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author Serkan ÖZAL
@@ -29,14 +28,9 @@ import com.hazelcast.aware.domain.model.config.HazelcastAwareFieldConfig;
  * 		GitHub   : https://github.com/serkan-ozal
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
-public interface ConfigProvider {
-
-	boolean isAvailable();
-	
-	Set<Class<?>> getHazelcastAwareClasses();
-	Set<Class<? extends HazelcastAwareConfigProvider>> getHazelcastAwareConfigProviderClasses();
-	
-	HazelcastAwareFieldConfig getHazelcastAwareFieldConfig(Field field);
-	HazelcastAwareClassConfig getHazelcastAwareClassConfig(Class<?> clazz);
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@HazelcastAwareAnnotation
+public @interface HazelcastAwareConfigProviderClass {
 	
 }

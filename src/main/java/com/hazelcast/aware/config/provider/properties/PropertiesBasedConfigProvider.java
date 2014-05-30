@@ -17,8 +17,10 @@
 package com.hazelcast.aware.config.provider.properties;
 
 import java.lang.reflect.Field;
+import java.util.Set;
 
 import com.hazelcast.aware.config.provider.ConfigProvider;
+import com.hazelcast.aware.config.provider.HazelcastAwareConfigProvider;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareClassConfig;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareFieldConfig;
 
@@ -34,6 +36,16 @@ public class PropertiesBasedConfigProvider implements ConfigProvider {
 	@Override
 	public boolean isAvailable() {
 		return false;
+	}
+	
+	@Override
+	public Set<Class<?>> getHazelcastAwareClasses() {
+		return null;
+	}
+	
+	@Override
+	public Set<Class<? extends HazelcastAwareConfigProvider>> getHazelcastAwareConfigProviderClasses() {
+		return null;
 	}
 	
 	@Override

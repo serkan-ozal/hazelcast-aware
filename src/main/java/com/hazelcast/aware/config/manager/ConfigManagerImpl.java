@@ -17,8 +17,12 @@
 package com.hazelcast.aware.config.manager;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Level;
 
 import com.hazelcast.aware.config.provider.ConfigProvider;
+import com.hazelcast.aware.config.provider.HazelcastAwareConfigProvider;
 import com.hazelcast.aware.config.provider.annotation.AnnotationBasedConfigProvider;
 import com.hazelcast.aware.config.provider.properties.PropertiesBasedConfigProvider;
 import com.hazelcast.aware.config.provider.xml.XmlBasedConfigProvider;
@@ -34,11 +38,54 @@ import com.hazelcast.aware.domain.model.config.HazelcastAwareFieldConfig;
  */
 public class ConfigManagerImpl extends BaseConfigManager {
 
+	protected Set<Class<?>> hazelcastAwareClasses;
+	protected Set<Class<? extends HazelcastAwareConfigProvider>> hazelcastAwareConfigProviderClasses;
+	
 	@Override
 	protected void init() {
 		addConfigProviderIfAvailable(new AnnotationBasedConfigProvider());
 		addConfigProviderIfAvailable(new XmlBasedConfigProvider());
 		addConfigProviderIfAvailable(new PropertiesBasedConfigProvider());
+		
+		findHazelcastAwareClasses();
+		findHazelcastAwareConfigProviderClasses();
+	}
+	
+	protected void findHazelcastAwareClasses() {
+		hazelcastAwareClasses = new HashSet<Class<?>>();
+		for (ConfigProvider configProvider : configProviderList) {
+			if (configProvider.isAvailable()) {
+				Set<Class<?>> hzAwareClasses = configProvider.getHazelcastAwareClasses();
+				if (hzAwareClasses != null) {
+					hazelcastAwareClasses.addAll(hzAwareClasses);
+				}	
+			}
+		}	
+		logger.log(Level.INFO, "Found Hazelcast-Aware classes: " + hazelcastAwareClasses);
+	}
+	
+	protected void findHazelcastAwareConfigProviderClasses() {
+		hazelcastAwareConfigProviderClasses = new HashSet<Class<? extends HazelcastAwareConfigProvider>>();
+		for (ConfigProvider configProvider : configProviderList) {
+			if (configProvider.isAvailable()) {
+				Set<Class<? extends HazelcastAwareConfigProvider>> hzAwareConfigProviderClasses = 
+						configProvider.getHazelcastAwareConfigProviderClasses();
+				if (hzAwareConfigProviderClasses != null) {
+					hazelcastAwareConfigProviderClasses.addAll(hzAwareConfigProviderClasses);
+				}	
+			}
+		}	
+		logger.log(Level.INFO, "Found Hazelcast-Aware Config Provider classes: " + hazelcastAwareConfigProviderClasses);
+	}
+	
+	@Override
+	public Set<Class<?>> getHazelcastAwareClasses() {
+		return hazelcastAwareClasses;
+	}
+	
+	@Override
+	public Set<Class<? extends HazelcastAwareConfigProvider>> getHazelcastAwareConfigProviderClasses() {
+		return hazelcastAwareConfigProviderClasses;
 	}
 
 	@Override

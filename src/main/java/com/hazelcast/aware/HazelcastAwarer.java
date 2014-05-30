@@ -16,10 +16,17 @@
 
 package com.hazelcast.aware;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 
-import com.hazelcast.aware.instrument.HazelcastAwareClassRedefiner;
-import com.hazelcast.aware.scanner.HazelcastAwareScannerFactory;
+import com.hazelcast.aware.config.manager.ConfigManager;
+import com.hazelcast.aware.config.manager.ConfigManagerFactory;
+import com.hazelcast.aware.processor.HazelcastAwareConfigProviderProcessor;
+import com.hazelcast.aware.processor.HazelcastAwareInjectorProcessor;
+import com.hazelcast.aware.processor.HazelcastAwareProcessor;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
 
@@ -35,67 +42,75 @@ import tr.com.serkanozal.jillegal.agent.JillegalAgent;
 public class HazelcastAwarer {
 
 	private static final ILogger logger = Logger.getLogger(HazelcastAwarer.class);
-	private static final HazelcastAwareClassRedefiner classRedefiner = new HazelcastAwareClassRedefiner();
+	
+	private static final Set<HazelcastAwareProcessor> processors = 
+			Collections.synchronizedSet(
+					new TreeSet<HazelcastAwareProcessor>(
+							new HazelcastAwareProcessorComparator()));
 	
 	private static volatile boolean awared = false;
 	
+	private static final ConfigManager configManager = ConfigManagerFactory.getConfigManager();
+	
+	private static class HazelcastAwareProcessorComparator implements Comparator<HazelcastAwareProcessor> {
+
+		@Override
+		public int compare(HazelcastAwareProcessor o1, HazelcastAwareProcessor o2) {
+			// Sort as reverse order
+			if (o1.getOrder() >= o2.getOrder()) {
+				return -1;
+			}
+			else {
+				return +1;
+			}
+		}
+		
+	}
+	
 	static {
+		init();
+	}
+	
+	private static void init() {
 		JillegalAgent.init();
+		registerDefaultHazelcastAwareProcessors();
+	}
+	
+	private static void registerDefaultHazelcastAwareProcessors() {
+		addHazelcastAwareProcessor(new HazelcastAwareInjectorProcessor());
+		addHazelcastAwareProcessor(new HazelcastAwareConfigProviderProcessor());
+	}
+	
+	public static void addHazelcastAwareProcessor(HazelcastAwareProcessor processor) {
+		processors.add(processor);
+	}
+	
+	public static void removeHazelcastAwareProcessor(HazelcastAwareProcessor processor) {
+		processors.remove(processor);
 	}
 
 	public synchronized static void makeHazelcastAware() {
 		if (!awared) {
-			
-			logger.log(
-					Level.INFO, 
-					"Scanning started for Hazelcast-Aware classes ..."); 
-			long start = System.currentTimeMillis();
-			Class<?>[] hazelcastAwareClasses = 
-					HazelcastAwareScannerFactory.
-						getHazelcastAwareScanner().getHazelcastAwareClasses();
-			long finish = System.currentTimeMillis();
-			logger.log(
-					Level.INFO, 
-					"Scanning finished for Hazelcast-Aware classes in " + 
-							(finish - start) + " milliseconds"); 
-			
-			if (hazelcastAwareClasses != null && hazelcastAwareClasses.length > 0) { 
-				StringBuilder hazelcastAwareClassesBuilder = new StringBuilder();
-				for (int i = 0; i < hazelcastAwareClasses.length; i++) {
-					if (i > 0) {
-						hazelcastAwareClassesBuilder.append(", ");
-					}
-					hazelcastAwareClassesBuilder.append(hazelcastAwareClasses[i].getName());
-				}
-				
-				logger.log(
-						Level.INFO, 
-						"These classes will be Hazelcast-Aware: " + 
-								hazelcastAwareClassesBuilder.toString()); 
-				
+			for (HazelcastAwareProcessor processor : processors) {
 				try {
-					for (Class<?> hazelcastAwareClass : hazelcastAwareClasses) {
-						classRedefiner.redefine(hazelcastAwareClass);
-						logger.log(
-								Level.INFO, 
-								"Now " + hazelcastAwareClass.getName() + " is a Hazelcast-Aware class"); 
-					}	
-				} 
+					logger.log(
+							Level.INFO, 
+							"Executing processor " + processor.getClass().getName() + " ..."); 
+					processor.process(configManager);
+				}
 				catch (Throwable t) {
-					t.printStackTrace();
 					logger.log(
 							Level.ALL, 
-							"Error occured while instrumenting Hazelcast-Aware classes: " + 
-								hazelcastAwareClassesBuilder,
-							t);
+							"Error occured while executing processor " + 
+									processor.getClass().getName()); 
 				}
 			}
-			else {
-				logger.log(Level.INFO, "There is no Hazelcast-Aware class at classpath"); 
-			}
-			
-			awared = true;
 		}	
+		else {
+			logger.log(Level.INFO, "There is no Hazelcast-Aware class at classpath"); 
+		}
+			
+		awared = true;	
 	}
 	
 }

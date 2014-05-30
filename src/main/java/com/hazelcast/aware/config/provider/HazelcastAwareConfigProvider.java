@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-package com.hazelcast.aware.scanner;
+package com.hazelcast.aware.config.provider;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import com.hazelcast.aware.config.provider.annotation.HazelcastAwareClass;
-
-import net.sf.corn.cps.CPScanner;
-import net.sf.corn.cps.ClassFilter;
+import com.hazelcast.config.Config;
 
 /**
  * @author Serkan ÖZAL
@@ -32,22 +27,8 @@ import net.sf.corn.cps.ClassFilter;
  * 		GitHub   : https://github.com/serkan-ozal
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
-public class HazelcastAwareScannerImpl implements HazelcastAwareScanner {
-	
-	private Set<Class<?>> hazelcastAwareClasses;
-	
-	@Override
-	public synchronized Set<Class<?>> getHazelcastAwareClasses() {
-		if (hazelcastAwareClasses == null) {
-			List<Class<?>> hazelcastAwareClassList = 
-					CPScanner.scanClasses(
-							new ClassFilter().
-									annotation(HazelcastAwareClass.class));
-			if (hazelcastAwareClassList != null) {
-				hazelcastAwareClasses = new HashSet<Class<?>>(hazelcastAwareClassList);
-			}
-		}
-		return hazelcastAwareClasses;
-	}
+public interface HazelcastAwareConfigProvider {
+
+	List<Config> provideConfigs(); 
 	
 }

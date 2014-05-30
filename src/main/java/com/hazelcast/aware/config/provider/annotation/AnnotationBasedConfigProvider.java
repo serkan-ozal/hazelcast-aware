@@ -19,6 +19,7 @@ package com.hazelcast.aware.config.provider.annotation;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -27,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import com.hazelcast.aware.config.provider.ConfigProvider;
+import com.hazelcast.aware.config.provider.HazelcastAwareConfigProvider;
 import com.hazelcast.aware.domain.builder.config.HazelcastAwareClassConfigBuilder;
 import com.hazelcast.aware.domain.builder.config.HazelcastAwareFieldConfigBuilder;
 import com.hazelcast.aware.domain.builder.config.HazelcastAwareListFieldConfigBuilder;
@@ -41,6 +43,8 @@ import com.hazelcast.aware.domain.model.config.HazelcastAwareMapFieldConfig;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareQueueFieldConfig;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareSetFieldConfig;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareTopicFieldConfig;
+import com.hazelcast.aware.scanner.HazelcastAwareScanner;
+import com.hazelcast.aware.scanner.HazelcastAwareScannerFactory;
 import com.hazelcast.aware.util.ReflectionUtil;
 import com.hazelcast.core.ITopic;
 import com.hazelcast.logging.ILogger;
@@ -57,10 +61,54 @@ public class AnnotationBasedConfigProvider implements ConfigProvider {
 
 	protected final ILogger logger = Logger.getLogger(getClass());
 	
+	protected final HazelcastAwareScanner hazelcastAwareScanner = 
+			HazelcastAwareScannerFactory.getHazelcastAwareScanner();
+	
 	protected Map<Field, HazelcastAwareFieldConfig> fieldConfigMap = 
 				new ConcurrentHashMap<Field, HazelcastAwareFieldConfig>();
 	protected Map<Class<?>, HazelcastAwareClassConfig> classConfigMap = 
 				new ConcurrentHashMap<Class<?>, HazelcastAwareClassConfig>();
+	
+	protected Set<Class<?>> hazelcastAwareClasses;
+	protected Set<Class<? extends HazelcastAwareConfigProvider>> hazelcastAwareConfigProviderClasses;
+	
+	public AnnotationBasedConfigProvider() {
+		init();
+	}
+	
+	protected void init() {
+		scanHazelcastAwareClasses();
+		findHazelcastAwareConfigProviderClasses();
+	}
+	
+	protected void scanHazelcastAwareClasses() {
+		logger.log(
+				Level.INFO, 
+				"Scanning started for Hazelcast-Aware classes ..."); 
+		long start = System.currentTimeMillis();
+		hazelcastAwareClasses = 
+				new HashSet<Class<?>>(
+						hazelcastAwareScanner.getHazelcastAwareClasses());
+		long finish = System.currentTimeMillis();
+		logger.log(
+				Level.INFO, 
+				"Scanning finished for Hazelcast-Aware classes in " + 
+						(finish - start) + " milliseconds"); 
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected void findHazelcastAwareConfigProviderClasses() {
+		if (hazelcastAwareClasses != null) {
+			hazelcastAwareConfigProviderClasses = 
+					new HashSet<Class<? extends HazelcastAwareConfigProvider>>();
+			for (Class<?> hazelcastAwareClass : hazelcastAwareClasses) {
+				if (HazelcastAwareConfigProvider.class.isAssignableFrom(hazelcastAwareClass)) {
+					hazelcastAwareConfigProviderClasses.add(
+							(Class<? extends HazelcastAwareConfigProvider>) hazelcastAwareClass);
+				}
+			}
+		}
+	}
 	
 	@Override
 	public boolean isAvailable() {
@@ -68,11 +116,26 @@ public class AnnotationBasedConfigProvider implements ConfigProvider {
 	}
 	
 	@Override
+	public Set<Class<?>> getHazelcastAwareClasses() {
+		return hazelcastAwareClasses;
+	}
+	
+	@Override
+	public Set<Class<? extends HazelcastAwareConfigProvider>> getHazelcastAwareConfigProviderClasses() {
+		return hazelcastAwareConfigProviderClasses;
+	}
+	
+	@Override
 	public HazelcastAwareFieldConfig getHazelcastAwareFieldConfig(Field field) {
 		HazelcastAwareFieldConfig fieldConfig = fieldConfigMap.get(field);
 		if (fieldConfig == null) {
 			fieldConfig = findHazelcastAwareFieldConfig(field);
-			fieldConfigMap.put(field, fieldConfig);
+			if (fieldConfig != null) {
+				fieldConfigMap.put(field, fieldConfig);
+			}
+			else {
+				return null;
+			}
 		}
 		return fieldConfig;
 	}
@@ -232,7 +295,12 @@ public class AnnotationBasedConfigProvider implements ConfigProvider {
 		HazelcastAwareClassConfig classConfig = classConfigMap.get(clazz);
 		if (classConfig == null) {
 			classConfig = findHazelcastAwareClassConfig(clazz);
-			classConfigMap.put(clazz, classConfig);
+			if (classConfig != null) {
+				classConfigMap.put(clazz, classConfig);
+			}
+			else {
+				return null;
+			}
 		}
 		return classConfig;
 	}

@@ -103,7 +103,7 @@ public class HazelcastAwareBean {
 * **Instance name:**  You can associate Hazelcast aware class with specific Hazelcast instance by using **`instanceName`** attribute of **`com.hazelcast.aware.config.provider.annotation.HazelcastAwareClass`** annotation. If you don't specified instance name, default Hazelcast instance is used.
 
 ~~~~~ java
-@HazelcastAwareClass(instanceName = "myHazalcastInstance")
+@HazelcastAwareClass(instanceName = "myHazelcastInstance")
 public class HazelcastAwareBean {
 
 	...
@@ -121,7 +121,7 @@ You can make general configurations of any field defined in any Hazelcast aware 
 @HazelcastAwareClass
 public class HazelcastAwareBean {
 
-	@HazelcastAwareField(instanceName = "myHazalcastInstance")
+	@HazelcastAwareField(instanceName = "myHazelcastInstance")
 	private Map<Long, String> myMap;
 	
 	...

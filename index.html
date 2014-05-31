@@ -1,34 +1,37 @@
 <!DOCTYPE html>
 <html>
+
   <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Hazelcast-Aware : Make your application aware of Hazelcast with Java Instrumentation API" />
 
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
-    <title>Hazelcast-Aware by serkan-ozal</title>
+    <title>Hazelcast-Aware</title>
   </head>
 
   <body>
-    <header>
-      <div class="inner">
-        <h1>Hazelcast-Aware</h1>
-        <h2>Make your application aware of Hazelcast with Java Instrumentation API</h2>
-        <a href="https://github.com/serkan-ozal/hazelcast-aware" class="button"><small>View project on</small>GitHub</a>
-      </div>
-    </header>
 
-    <div id="content-wrapper">
-      <div class="inner clearfix">
-        <section id="main-content">
-          <h1>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/serkan-ozal/hazelcast-aware">View on GitHub</a>
+
+          <h1 id="project_title">Hazelcast-Aware</h1>
+          <h2 id="project_tagline">Make your application aware of Hazelcast with Java Instrumentation API</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/serkan-ozal/hazelcast-aware/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/serkan-ozal/hazelcast-aware/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
 <a name="1-what-is-hazelcast-aware" class="anchor" href="#1-what-is-hazelcast-aware"><span class="octicon octicon-link"></span></a>1. What is Hazelcast-Aware?</h1>
 
 <p><strong>Hazelcast-Aware</strong> is a <strong>Java Instrumentation API</strong> based <strong>Hazelcast</strong> extension to use Hazelcast data structures (Distributed maps, lists, sets, queues, objects,  locks, topics, executers, entry listeners, etc ...) without interacting with <strong><code>HazelcastInstance</code></strong> class. You can specify which classes or fields will be Hazelcast aware by annotation or XML based configurations. <strong>Hazelcast-Aware</strong> scans classpath (classpath directories, dependent jar files and web application directories) of your application and finds Hazelcast aware classes and fields, then instruments them. Demo application is avaiable at <a href="https://github.com/serkan-ozal/hazelcast-aware-demo">https://github.com/serkan-ozal/hazelcast-aware-demo</a>.</p>
@@ -129,7 +132,7 @@ Latest version is <code>1.0.0</code>.</p>
 <ul>
 <li>
 <strong>Instance name:</strong>  You can associate Hazelcast aware class with specific Hazelcast instance by using <strong><code>instanceName</code></strong> attribute of <strong><code>com.hazelcast.aware.config.provider.annotation.HazelcastAwareClass</code></strong> annotation. If you don't specified instance name, default Hazelcast instance is used.</li>
-</ul><div class="highlight highlight-java"><pre><span class="nd">@HazelcastAwareClass</span><span class="o">(</span><span class="n">instanceName</span> <span class="o">=</span> <span class="s">"myHazalcastInstance"</span><span class="o">)</span>
+</ul><div class="highlight highlight-java"><pre><span class="nd">@HazelcastAwareClass</span><span class="o">(</span><span class="n">instanceName</span> <span class="o">=</span> <span class="s">"myHazelcastInstance"</span><span class="o">)</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">HazelcastAwareBean</span> <span class="o">{</span>
 
     <span class="o">...</span>
@@ -147,7 +150,7 @@ Latest version is <code>1.0.0</code>.</p>
 </ul><div class="highlight highlight-java"><pre><span class="nd">@HazelcastAwareClass</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">HazelcastAwareBean</span> <span class="o">{</span>
 
-    <span class="nd">@HazelcastAwareField</span><span class="o">(</span><span class="n">instanceName</span> <span class="o">=</span> <span class="s">"myHazalcastInstance"</span><span class="o">)</span>
+    <span class="nd">@HazelcastAwareField</span><span class="o">(</span><span class="n">instanceName</span> <span class="o">=</span> <span class="s">"myHazelcastInstance"</span><span class="o">)</span>
     <span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">myMap</span><span class="o">;</span>
 
     <span class="o">...</span>
@@ -459,25 +462,18 @@ Latest version is <code>1.0.0</code>.</p>
 <li><p>Properties file based configuration will be supported.</p></li>
 <li><p>Caching will be supported.</p></li>
 </ul>
-        </section>
-
-        <aside id="sidebar">
-          <a href="https://github.com/serkan-ozal/hazelcast-aware/zipball/master" class="button">
-            <small>Download</small>
-            .zip file
-          </a>
-          <a href="https://github.com/serkan-ozal/hazelcast-aware/tarball/master" class="button">
-            <small>Download</small>
-            .tar.gz file
-          </a>
-
-          <p class="repo-owner"><a href="https://github.com/serkan-ozal/hazelcast-aware"></a> is maintained by <a href="https://github.com/serkan-ozal">serkan-ozal</a>.</p>
-
-          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
-        </aside>
-      </div>
+      </section>
     </div>
 
-  
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Hazelcast-Aware maintained by <a href="https://github.com/serkan-ozal">serkan-ozal</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
   </body>
 </html>

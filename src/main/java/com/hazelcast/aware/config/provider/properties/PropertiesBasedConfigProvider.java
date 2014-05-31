@@ -23,6 +23,7 @@ import com.hazelcast.aware.config.provider.ConfigProvider;
 import com.hazelcast.aware.config.provider.HazelcastAwareConfigProvider;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareClassConfig;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareFieldConfig;
+import com.hazelcast.aware.initializer.HazelcastAwareInitializer;
 import com.hazelcast.aware.injector.HazelcastAwareInjector;
 import com.hazelcast.aware.processor.HazelcastAwareProcessor;
 
@@ -57,6 +58,11 @@ public class PropertiesBasedConfigProvider implements ConfigProvider {
 	
 	@Override
 	public Set<Class<? extends HazelcastAwareProcessor>> getHazelcastAwareProcessorClasses() {
+		return null;
+	}
+	
+	@Override
+	public Set<Class<? extends HazelcastAwareInitializer>> getHazelcastAwareInitializerClasses() {
 		return null;
 	}
 	

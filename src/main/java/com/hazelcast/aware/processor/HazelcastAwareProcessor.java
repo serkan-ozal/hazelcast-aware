@@ -17,6 +17,7 @@
 package com.hazelcast.aware.processor;
 
 import com.hazelcast.aware.config.manager.ConfigManager;
+import com.hazelcast.aware.domain.model.HazelcastAwareOrdered;
 
 /**
  * @author Serkan ÖZAL
@@ -25,13 +26,8 @@ import com.hazelcast.aware.config.manager.ConfigManager;
  * 		GitHub   : https://github.com/serkan-ozal
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
-public interface HazelcastAwareProcessor {
+public interface HazelcastAwareProcessor extends HazelcastAwareOrdered {
 	
-	int LOWEST_ORDER = Integer.MIN_VALUE;
-	int ORDER_DOESNT_MATTER = 0;
-	int HIGHEST_ORDER = Integer.MAX_VALUE;
-	
-	int getOrder();
 	void process(ConfigManager configManager);
 	
 }

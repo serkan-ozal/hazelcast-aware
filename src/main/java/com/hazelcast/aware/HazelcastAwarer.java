@@ -24,6 +24,7 @@ import java.util.logging.Level;
 
 import com.hazelcast.aware.config.manager.ConfigManager;
 import com.hazelcast.aware.config.manager.ConfigManagerFactory;
+import com.hazelcast.aware.initializer.HazelcastAwareInitializer;
 import com.hazelcast.aware.injector.DefaultHazelcastAwareInjector;
 import com.hazelcast.aware.injector.HazelcastAwareInjector;
 import com.hazelcast.aware.processor.HazelcastAwareConfigProviderProcessor;
@@ -60,6 +61,11 @@ public class HazelcastAwarer {
 					new TreeSet<HazelcastAwareInjector<?>>(
 							new HazelcastAwareInjectorComparator()));
 	
+	private static final Set<HazelcastAwareInitializer> initializers = 
+			Collections.synchronizedSet(
+					new TreeSet<HazelcastAwareInitializer>(
+							new HazelcastAwareInitializerComparator()));
+	
 	private static class HazelcastAwareProcessorComparator implements Comparator<HazelcastAwareProcessor> {
 
 		@Override
@@ -90,6 +96,21 @@ public class HazelcastAwarer {
 		
 	}
 	
+	private static class HazelcastAwareInitializerComparator implements Comparator<HazelcastAwareInitializer> {
+
+		@Override
+		public int compare(HazelcastAwareInitializer o1, HazelcastAwareInitializer o2) {
+			// Sort as reverse order
+			if (o1.getOrder() >= o2.getOrder()) {
+				return -1;
+			}
+			else {
+				return +1;
+			}
+		}
+		
+	}
+	
 	static {
 		init();
 	}
@@ -97,11 +118,28 @@ public class HazelcastAwarer {
 	private static void init() {
 		JillegalAgent.init();
 		
+		registerConfiguredHazelcastAwareInitializers();
+		
 		registerDefaultHazelcastAwareProcessors();
 		registerConfiguredHazelcastAwareProcessors();
 		
 		registerDefaultHazelcastAwareInjectors();
-		registerConfiguredHazelcastAwareInjectors();
+		registerConfiguredHazelcastAwareInjectors();	
+	}
+	
+	private static void registerConfiguredHazelcastAwareInitializers() {
+		Set<Class<? extends HazelcastAwareInitializer>> hazelcastAwareInitializerClasses = 
+				configManager.getHazelcastAwareInitializerClasses();
+		if (hazelcastAwareInitializerClasses != null) {
+			for (Class<? extends HazelcastAwareInitializer> hazelcastAwareInitializerClass : 
+					hazelcastAwareInitializerClasses) {
+				HazelcastAwareInitializer initializer = 
+						InstanceUtil.getSingleInstance(hazelcastAwareInitializerClass);
+				if (initializer != null) {
+					addHazelcastAwareInitializer(initializer);
+				}
+			}
+		}
 	}
 	
 	private static void registerDefaultHazelcastAwareProcessors() {
@@ -158,9 +196,32 @@ public class HazelcastAwarer {
 	public static void removeHazelcastAwareInjector(HazelcastAwareInjector<?> injector) {
 		injectors.remove(injector);
 	}
+	
+	public static void addHazelcastAwareInitializer(HazelcastAwareInitializer initializer) {
+		initializers.add(initializer);
+	}
+	
+	public static void removeHazelcastAwareInitializer(HazelcastAwareInitializer initializer) {
+		initializers.remove(initializer);
+	}
 
 	public synchronized static void makeHazelcastAware() {
 		if (!awared) {
+			for (HazelcastAwareInitializer initializer : initializers) {
+				try {
+					logger.log(
+							Level.INFO, 
+							"Executing initializer " + initializer.getClass().getName() + " ..."); 
+					initializer.init(configManager);
+				}
+				catch (Throwable t) {
+					logger.log(
+							Level.ALL, 
+							"Error occured while executing initializer " + 
+									initializer.getClass().getName()); 
+				}
+			}
+			
 			for (HazelcastAwareProcessor processor : processors) {
 				try {
 					logger.log(

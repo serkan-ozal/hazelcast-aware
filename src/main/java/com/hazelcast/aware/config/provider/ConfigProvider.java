@@ -21,6 +21,7 @@ import java.util.Set;
 
 import com.hazelcast.aware.domain.model.config.HazelcastAwareClassConfig;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareFieldConfig;
+import com.hazelcast.aware.initializer.HazelcastAwareInitializer;
 import com.hazelcast.aware.injector.HazelcastAwareInjector;
 import com.hazelcast.aware.processor.HazelcastAwareProcessor;
 
@@ -39,6 +40,7 @@ public interface ConfigProvider {
 	Set<Class<? extends HazelcastAwareConfigProvider>> getHazelcastAwareConfigProviderClasses();
 	Set<Class<? extends HazelcastAwareProcessor>> getHazelcastAwareProcessorClasses();
 	Set<Class<? extends HazelcastAwareInjector<?>>> getHazelcastAwareInjectorClasses();
+	Set<Class<? extends HazelcastAwareInitializer>> getHazelcastAwareInitializerClasses();
 	
 	HazelcastAwareFieldConfig getHazelcastAwareFieldConfig(Field field);
 	HazelcastAwareClassConfig getHazelcastAwareClassConfig(Class<?> clazz);

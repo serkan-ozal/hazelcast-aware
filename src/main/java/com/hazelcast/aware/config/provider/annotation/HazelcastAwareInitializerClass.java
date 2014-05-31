@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-package com.hazelcast.aware.injector;
+package com.hazelcast.aware.config.provider.annotation;
 
-import com.hazelcast.aware.domain.model.HazelcastAwareOrdered;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author Serkan ÖZAL
@@ -25,11 +28,9 @@ import com.hazelcast.aware.domain.model.HazelcastAwareOrdered;
  * 		GitHub   : https://github.com/serkan-ozal
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
-public interface HazelcastAwareInjector<T> extends HazelcastAwareOrdered {
-	
-	Class<Object> TYPE_DOESNT_MATTER = Object.class;
-	
-	Class<T> getType();
-	void inject(T obj);
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@HazelcastAwareAnnotation
+public @interface HazelcastAwareInitializerClass {
 	
 }

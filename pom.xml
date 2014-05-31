@@ -3,7 +3,7 @@
   	<modelVersion>4.0.0</modelVersion>
   	<groupId>com.hazelcast</groupId>
   	<artifactId>hazelcast-aware</artifactId>
-  	<version>1.0.0-SNAPSHOT</version>
+  	<version>1.0.0</version>
     <name>Hazelcast Aware</name>
     <url>https://github.com/serkan-ozal/hazelcast-aware</url>
      

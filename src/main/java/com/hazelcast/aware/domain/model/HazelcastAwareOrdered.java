@@ -23,51 +23,12 @@ package com.hazelcast.aware.domain.model;
  * 		GitHub   : https://github.com/serkan-ozal
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
-public class ObjectWrapper<T> {
-
-	private T obj;
+public interface HazelcastAwareOrdered {
 	
-	public ObjectWrapper(T obj) {
-		this.obj = obj;
-	}
+	int getOrder();
 	
-	public T get() {
-		return obj;
-	}
-	
-	public void set(T obj) {
-		this.obj = obj;
-	}
-	
-	@Override
-	public String toString() {
-		if (obj != null) {
-			return obj.toString();
-		}
-		else {
-			return null;
-		}
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof ObjectWrapper == false) {
-			return false;
-		}
-		ObjectWrapper<T> ow = (ObjectWrapper<T>)obj;
-		if (this.obj == null && ow.obj == null) {
-			return true;
-		}
-		else if (this.obj != null && ow.obj == null) {
-			return false;
-		}
-		else if (this.obj == null && ow.obj != null) {
-			return false;
-		}
-		else {
-			return this.obj.equals(ow.obj);
-		}	
-	}
+	int LOWEST_ORDER = Integer.MIN_VALUE;
+	int ORDER_DOESNT_MATTER = 0;
+	int HIGHEST_ORDER = Integer.MAX_VALUE;
 	
 }

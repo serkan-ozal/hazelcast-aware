@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.hazelcast.aware.injector;
+package com.hazelcast.aware.initializer;
 
+import com.hazelcast.aware.config.manager.ConfigManager;
 import com.hazelcast.aware.domain.model.HazelcastAwareOrdered;
 
 /**
@@ -25,11 +26,8 @@ import com.hazelcast.aware.domain.model.HazelcastAwareOrdered;
  * 		GitHub   : https://github.com/serkan-ozal
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
-public interface HazelcastAwareInjector<T> extends HazelcastAwareOrdered {
-	
-	Class<Object> TYPE_DOESNT_MATTER = Object.class;
-	
-	Class<T> getType();
-	void inject(T obj);
+public interface HazelcastAwareInitializer extends HazelcastAwareOrdered {
+
+	void init(ConfigManager configManager);
 	
 }

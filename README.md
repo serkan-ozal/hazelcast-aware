@@ -78,7 +78,16 @@ Latest version is `1.0.0`.
 4. Features
 =======
 
-4.1. Hazelcast-Aware Class
+4.1. Default Configurations
+-------
+
+You can access object which holds default configurations by **`DefaultConfigs getDefaultConfigs()`** method of **`com.hazelcast.aware.config.manager.ConfigManager`** class. If you don't have configuration manager instance, you can access it by **`com.hazelcast.aware.config.manager.ConfigManagerFactory.getConfigManager()`**.
+
+Here are default configurations:
+
+* **Default Instance name:** If there is no specified instance name for Hazelcast aware class or field, this instance name is used to get default Hazelcast instance. If there is no specified instance name for Hazelcast aware class or field and default instance name is empty in default configurations, all Hazelcast instances are sorted by their names as ascending and got first one.
+
+4.2. Hazelcast-Aware Class
 -------
 
 You can make any class Hazelcast aware by annotating it with **`com.hazelcast.aware.config.provider.annotation.HazelcastAwareClass`** annotation.
@@ -101,7 +110,7 @@ public class HazelcastAwareBean {
 }
 ~~~~~
 
-4.2. Hazelcast-Aware Field
+4.3. Hazelcast-Aware Field
 -------
 
 You can make general configurations of any field defined in any Hazelcast aware class by annotating it with **`com.hazelcast.aware.config.provider.annotation.HazelcastAwareField`** annotation.
@@ -120,7 +129,7 @@ public class HazelcastAwareBean {
 ~~~~~
 
 
-4.3. Hazelcast-Aware Map Typed Field
+4.4. Hazelcast-Aware Map Typed Field
 -------
 
 You can make any **`java.util.Map`** typed (or sub-typed) field, defined in any Hazelcast aware class, Hazelcast aware by annotating it with **`com.hazelcast.aware.config.provider.annotation.HazelcastAwareMapField`** annotation.
@@ -149,7 +158,7 @@ public class HazelcastAwareBean {
 }	
 ~~~~~
 
-4.4. Hazelcast-Aware List Typed Field
+4.5. Hazelcast-Aware List Typed Field
 -------
 
 You can make any **`java.util.List`** typed (or sub-typed) field, defined in any Hazelcast aware class, Hazelcast aware by annotating it with **`com.hazelcast.aware.config.provider.annotation.HazelcastAwareListField`** annotation.
@@ -178,7 +187,7 @@ public class HazelcastAwareBean {
 }	
 ~~~~~
 
-4.5. Hazelcast-Aware Set Typed Field
+4.6. Hazelcast-Aware Set Typed Field
 -------
 
 You can make any **`java.util.Set`** typed (or sub-typed) field, defined in any Hazelcast aware class, Hazelcast aware by annotating it with **`com.hazelcast.aware.config.provider.annotation.HazelcastAwareSetField`** annotation.
@@ -207,7 +216,7 @@ public class HazelcastAwareBean {
 }	
 ~~~~~
 
-4.6. Hazelcast-Aware Queue Typed Field
+4.7. Hazelcast-Aware Queue Typed Field
 -------
 
 You can make any **`java.util.Queue`** typed (or sub-typed) field, defined in any Hazelcast aware class, Hazelcast aware by annotating it with **`com.hazelcast.aware.config.provider.annotation.HazelcastAwareQueueField`** annotation.
@@ -236,7 +245,7 @@ public class HazelcastAwareBean {
 }	
 ~~~~~
 
-4.7. Hazelcast-Aware Topic Typed Field
+4.8. Hazelcast-Aware Topic Typed Field
 -------
 
 You can make any **`com.hazelcast.core.ITopic`** typed (or sub-typed) field, defined in any Hazelcast aware class, Hazelcast aware by annotating it with **`com.hazelcast.aware.config.provider.annotation.HazelcastAwareTopicField`** annotation.
@@ -265,12 +274,12 @@ public class HazelcastAwareBean {
 }	
 ~~~~~
 
-4.8. Hazelcast-Aware Initializer
+4.9. Hazelcast-Aware Initializer
 -------
 
 You can specify your custom initializer classes by implementing **`com.hazelcast.aware.initializer.HazelcastAwareInitializer`** interface to do some stuff before all operations such as setting default configurations in **`com.hazelcast.aware.config.DefaultConfigs`** class. Your custom initializer classes are found while scanning claspath and registered automatically. 
 
-You can specify execution order of your initializer by implementing **`int getOrder()`** method. There are three pre-defined execution orders such as **`HIGHEST_ORDER`**, **`ORDER_DOESNT_MATTER`** and **`LOWEST_ORDER`**, 
+You can specify execution order of your initializer by implementing **`int getOrder()`** method. There are three pre-defined execution orders such as **`HIGHEST_ORDER`**, **`ORDER_DOESNT_MATTER`** and **`LOWEST_ORDER`**. 
 
 ~~~~~ java
 @HazelcastAwareClass
@@ -290,14 +299,16 @@ public class MyHazelcastAwareInitializer implements HazelcastAwareInitializer {
 }	
 ~~~~~
 
-4.9. Hazelcast-Aware Injector
+4.10. Hazelcast-Aware Injector
 -------
 
 You can specify your custom injector classes by implementing **`com.hazelcast.aware.injector.HazelcastAwareInjector`** interface to do some stuff (injecting or whatever you want) on instances of Hazelcast aware classes. Your custom injector classes are found while scanning claspath and registered automatically. 
 
+Instance of injector class is called for every object creation of related class. 
+
 You must specify type of your related class to inject by implementing **`Class<T> getType()`** method. If you are interested in all types, you can return **`Object.class`** or pre-defined expression of it as **`TYPE_DOESNT_MATTER`** as type in  **`getType()`** method.
 
-You can specify execution order of your injector by implementing **`int getOrder()`** method. There are three pre-defined execution orders such as **`HIGHEST_ORDER`**, **`ORDER_DOESNT_MATTER`** and **`LOWEST_ORDER`**, 
+You can specify execution order of your injector by implementing **`int getOrder()`** method. There are three pre-defined execution orders such as **`HIGHEST_ORDER`**, **`ORDER_DOESNT_MATTER`** and **`LOWEST_ORDER`**. 
 
 ~~~~~ java
 @HazelcastAwareClass
@@ -321,12 +332,12 @@ public class MyHazelcastAwareInjector implements HazelcastAwareInjector<MyEntity
 }	
 ~~~~~
 
-4.10. Hazelcast-Aware Config Processor
+4.11. Hazelcast-Aware Processor
 -------
 
 You can specify your custom processor classes by implementing **`com.hazelcast.aware.processor.HazelcastAwareProcessor`** interface to do some stuff after instrumentation operations are done. Your custom processor classes are found while scanning claspath and registered automatically. 
 
-You can specify execution order of your processor by implementing **`int getOrder()`** method. There are three pre-defined execution orders such as **`HIGHEST_ORDER`**, **`ORDER_DOESNT_MATTER`** and **`LOWEST_ORDER`**, 
+You can specify execution order of your processor by implementing **`int getOrder()`** method. There are three pre-defined execution orders such as **`HIGHEST_ORDER`**, **`ORDER_DOESNT_MATTER`** and **`LOWEST_ORDER`**. 
 
 ~~~~~ java
 @HazelcastAwareClass
@@ -346,10 +357,79 @@ public class MyHazelcastAwareProcessor implements HazelcastAwareprocessor {
 }	
 ~~~~~
 
-4.11. Hazelcast-Aware Config Provider
+4.12. Hazelcast-Aware Config Provider
 -------
 
-5. Roadmap
+You can specify your custom configuration provider classes by implementing **`com.hazelcast.aware.config.provider.HazelcastAwareConfigProvider`** interface to provide Hazelcast cluster configurations (**`com.hazelcast.config.Config`**) to build Hazelcast cluster programmatically. Your custom configuration provider classes are found while scanning claspath and registered automatically.  
+
+~~~~~ java
+@HazelcastAwareClass
+public class HazelcastInstanceConfigProvider implements HazelcastAwareConfigProvider {
+
+	private List<Config> configs = new ArrayList<Config>();
+	
+	public HazelcastInstanceConfigProvider() {
+		init();
+	}
+	
+	/**
+	<hz:config>
+       <!-- Hazelcast Instance Name -->
+       <hz:instance-name>hazelcast-aware-demo-instance</hz:instance-name>
+       <!-- Hazelcast Group Name and Password -->
+       <hz:group name="hazelcast-aware-demo" password="$$$_hazelcast-aware-demo_$$$" />
+       <!-- Hazelcast Network Configuration -->
+       <hz:network port="5701" port-auto-increment="true">
+           <hz:join>
+               <hz:multicast enabled="true"/>
+               <hz:tcp-ip enabled="false"/>
+           </hz:join>
+       </hz:network>
+   	</hz:config>
+	*/
+	private void init() {
+		Config config = new Config();
+		config.setInstanceName("hazelcast-aware-demo-instance");
+		config.setGroupConfig(
+				new GroupConfig(
+						"hazelcast-aware-demo", 
+						"$$$_hazelcast-aware-demo_$$$"));
+		config.setNetworkConfig(
+				new NetworkConfig().
+						setPort(5701).
+						setPortAutoIncrement(true).
+						setJoin(
+								new JoinConfig().
+										setMulticastConfig(
+												new MulticastConfig().
+														setEnabled(true))));
+		configs.add(config);
+	}
+	
+	@Override
+	public List<Config> provideConfigs() {
+		return configs;
+	}
+
+}	
+~~~~~
+
+5. Lifecycle
+=======
+
+Lifecycle of operations done by Hazelcast-Aware are as follows:
+
+**1.** Find all Hazelcast aware classes (annotated by **`com.hazelcast.aware.config.provider.annotation.HazelcastAwareClass`** annotation and specificed at XML or properties configuration files).
+
+**2.** Find all Hazelcast aware initializer classes between Hazelcast aware classes and execute them. 
+
+**3.** Do instrumentation over found Hazelcast aware classes.
+
+**4.** Find all Hazelcast aware configuration provider classes between Hazelcast aware classes, get Hazelcast cluster configurations from them and create Hazelcast clusters with these configurations. 
+
+**5.** Find all Hazelcast aware processor classes between Hazelcast aware classes and execute them. 
+
+6. Roadmap
 =======
 
 * Distributed lock (**`ILock`**) will be supported.

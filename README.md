@@ -44,13 +44,13 @@ public class HazelcastAwareDemo extends HazelcastAware {
 
 In your `pom.xml`, you must add repository and dependency for **Hazelcast-Aware**. 
 You can change `hazelcast.aware.version` to any existing **Hazelcast-Aware** library version.
-Latest version is `1.0.0-SNAPSHOT`.
+Latest version is `1.0.0`.
 
 ~~~~~ xml
 ...
 <properties>
     ...
-    <hazelcast.aware.version>1.0.0-SNAPSHOT</hazelcast.aware.version>
+    <hazelcast.aware.version>1.0.0</hazelcast.aware.version>
     ...
 </properties>
 ...
@@ -104,26 +104,15 @@ public class HazelcastAwareBean {
 4.2. Hazelcast-Aware Field
 -------
 
-You can make general configurations of any field defined in any Hazelcast aware class by annotating it with **`com.hazelcast.aware.config.provider.annotation.HazelcastAwareMapField`** annotation.
+You can make general configurations of any field defined in any Hazelcast aware class by annotating it with **`com.hazelcast.aware.config.provider.annotation.HazelcastAwareField`** annotation.
+
+* **Instance name:** You can associate Hazelcast aware field with specific Hazelcast instance by using **`instanceName`** attribute of **`com.hazelcast.aware.config.provider.annotation.HazelcastAwareField`** annotation. If you don't specify instance name, Hazelcast instance of owner class is used. If instance name is not defined for class also, default Hazelcast instance is used.
 
 ~~~~~ java
 @HazelcastAwareClass
 public class HazelcastAwareBean {
 
-	@HazelcastAwareMapField(instanceName = "myHazelcastInstance")
-	private Map<Long, String> myMap;
-	
-	...
-}	
-~~~~~
-
-* **Instance name:** You can associate Hazelcast aware field with specific Hazelcast instance by using **`instanceName`** attribute of **`com.hazelcast.aware.config.provider.annotation.HazelcastAwareMapField`** annotation. If you don't specify instance name, Hazelcast instance of owner class is used. If instance name is not defined for class also, default Hazelcast instance is used.
-
-~~~~~ java
-@HazelcastAwareClass
-public class HazelcastAwareBean {
-
-	@HazelcastAwareMapField(instanceName = "myHazalcastInstance")
+	@HazelcastAwareField(instanceName = "myHazalcastInstance")
 	private Map<Long, String> myMap;
 	
 	...
@@ -276,16 +265,66 @@ public class HazelcastAwareBean {
 }	
 ~~~~~
 
-4.8. Hazelcast-Aware Processor
+4.8. Hazelcast-Aware Initializer
 -------
+
+You can specify your custom initializer classes by implementing any **`com.hazelcast.aware.initializer.HazelcastAwareInitializer`** interface to do some stuff before all operations such as setting default configurations in **`com.hazelcast.aware.config.DefaultConfigs`** class. Your custom initializer classes are found while scanning claspath and registered automatically. 
+
+You can specify execution order of your initializer by implementing **`int getOrder()`** method. There are three pre-defined execution orders such as **`HIGHEST_ORDER`**, **`ORDER_DOESNT_MATTER`** and **`LOWEST_ORDER`**, 
+
+~~~~~ java
+@HazelcastAwareClass
+public class MyHazelcastAwareInitializer implements HazelcastAwareInitializer {
+
+	@Override
+	public int getOrder() {
+		return ORDER_DOESNT_MATTER;
+	}
+	
+	
+	@Override
+	public void init(ConfigManager configManager) {
+		configManager.getDefaultConfigs().setDefaultInstanceName("myInstance");
+	}
+	
+}	
+~~~~~
 
 4.9. Hazelcast-Aware Injector
 -------
 
-4.10. Hazelcast-Aware Config Provider
+You can specify your custom injector classes by implementing any **`com.hazelcast.aware.injector.HazelcastAwareInjector`** interface to do some stuff (injecting or whatever you want) on instances of Hazelcast aware classes. Your custom injector classes are found while scanning claspath and registered automatically. 
+
+You must specify type of your related class to inject by implementing **`Class<T> getType()`** method. If you are interested in all types, you can return **`Object.class`** or pre-defined expression of it as **`TYPE_DOESNT_MATTER`** as type in  **`getType()`** method.
+
+You can specify execution order of your injector by implementing **`int getOrder()`** method. There are three pre-defined execution orders such as **`HIGHEST_ORDER`**, **`ORDER_DOESNT_MATTER`** and **`LOWEST_ORDER`**, 
+
+~~~~~ java
+@HazelcastAwareClass
+public class MyHazelcastAwareInjector implements HazelcastAwareInjector<MyEntity> {
+
+	@Override
+	public int getOrder() {
+		return ORDER_DOESNT_MATTER;
+	}
+	
+	@Override
+	Class<MyEntity> getType() {
+		return MyEntity.class;
+	}
+	
+	@Override
+	public void inject(MyEntity myEntity) {
+		// Do some stuff on MyEntity object
+	}
+	
+}	
+~~~~~
+
+4.10. Hazelcast-Aware Config Processor
 -------
 
-4.11. Hazelcast-Aware Initializer
+4.11. Hazelcast-Aware Config Provider
 -------
 
 5. Roadmap

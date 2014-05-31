@@ -20,10 +20,9 @@
 		<hazelcast.version>3.2.1</hazelcast.version>
 		<jillegal.agent.version>1.1.0-RELEASE</jillegal.agent.version>
 		<javassist.version>3.17.1-GA</javassist.version>
-		<corn.cps.version>1.1.7</corn.cps.version>
+		<reflections.version>0.9.9-RC1</reflections.version>
 		<junit-version>4.8.2</junit-version>
 		<easymock-version>3.0</easymock-version>
-		 
     </properties>
   
   	<build>
@@ -74,10 +73,10 @@
 			<version>${javassist.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.corn</groupId>
-			<artifactId>corn-cps</artifactId>
-			<version>${corn.cps.version}</version>
-		</dependency>
+   			<groupId>org.reflections</groupId>
+    		<artifactId>reflections</artifactId>
+    		<version>${reflections.version}</version>
+			</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

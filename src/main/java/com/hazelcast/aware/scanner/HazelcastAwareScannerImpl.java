@@ -16,14 +16,13 @@
 
 package com.hazelcast.aware.scanner;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import com.hazelcast.aware.config.provider.annotation.HazelcastAwareClass;
+import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
 
-import net.sf.corn.cps.CPScanner;
-import net.sf.corn.cps.ClassFilter;
+import com.hazelcast.aware.config.provider.annotation.HazelcastAwareClass;
+import com.hazelcast.aware.util.ClasspathUtil;
 
 /**
  * @author Serkan ÖZAL
@@ -34,18 +33,18 @@ import net.sf.corn.cps.ClassFilter;
  */
 public class HazelcastAwareScannerImpl implements HazelcastAwareScanner {
 	
+	private Reflections reflections = 
+			new Reflections(
+					new ConfigurationBuilder().
+							setUrls(ClasspathUtil.getClasspathUrls()));
+
 	private Set<Class<?>> hazelcastAwareClasses;
 	
 	@Override
 	public synchronized Set<Class<?>> getHazelcastAwareClasses() {
 		if (hazelcastAwareClasses == null) {
-			List<Class<?>> hazelcastAwareClassList = 
-					CPScanner.scanClasses(
-							new ClassFilter().
-									annotation(HazelcastAwareClass.class));
-			if (hazelcastAwareClassList != null) {
-				hazelcastAwareClasses = new HashSet<Class<?>>(hazelcastAwareClassList);
-			}
+			hazelcastAwareClasses = 
+					reflections.getTypesAnnotatedWith(HazelcastAwareClass.class);
 		}
 		return hazelcastAwareClasses;
 	}

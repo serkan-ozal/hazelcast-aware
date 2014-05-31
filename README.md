@@ -81,6 +81,17 @@ Latest version is `1.0.0-SNAPSHOT`.
 4.1. Hazelcast-Aware Class
 -------
 
+You can make any class by annotating it with **`com.hazelcast.aware.config.provider.annotation.HazelcastAwareClass`** annotation.
+
+~~~~~ java
+
+@HazelcastAwareClass
+public class HazelcastAwareBean {
+
+	...
+}
+~~~~~
+
 4.2. Hazelcast-Aware Map Typed Field
 -------
 

@@ -43,6 +43,8 @@ import com.hazelcast.aware.domain.model.config.HazelcastAwareMapFieldConfig;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareQueueFieldConfig;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareSetFieldConfig;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareTopicFieldConfig;
+import com.hazelcast.aware.injector.HazelcastAwareInjector;
+import com.hazelcast.aware.processor.HazelcastAwareProcessor;
 import com.hazelcast.aware.scanner.HazelcastAwareScanner;
 import com.hazelcast.aware.scanner.HazelcastAwareScannerFactory;
 import com.hazelcast.aware.util.ReflectionUtil;
@@ -71,6 +73,8 @@ public class AnnotationBasedConfigProvider implements ConfigProvider {
 	
 	protected Set<Class<?>> hazelcastAwareClasses;
 	protected Set<Class<? extends HazelcastAwareConfigProvider>> hazelcastAwareConfigProviderClasses;
+	protected Set<Class<? extends HazelcastAwareProcessor>> hazelcastAwareProcessorClasses;
+	protected Set<Class<? extends HazelcastAwareInjector<?>>> hazelcastAwareInjectorClasses;
 	
 	public AnnotationBasedConfigProvider() {
 		init();
@@ -79,6 +83,8 @@ public class AnnotationBasedConfigProvider implements ConfigProvider {
 	protected void init() {
 		scanHazelcastAwareClasses();
 		findHazelcastAwareConfigProviderClasses();
+		findHazelcastAwareProcessorClasses();
+		findHazelcastAwareInjectorClasses();
 	}
 	
 	protected void scanHazelcastAwareClasses() {
@@ -110,6 +116,34 @@ public class AnnotationBasedConfigProvider implements ConfigProvider {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
+	protected void findHazelcastAwareProcessorClasses() {
+		if (hazelcastAwareClasses != null) {
+			hazelcastAwareProcessorClasses = 
+					new HashSet<Class<? extends HazelcastAwareProcessor>>();
+			for (Class<?> hazelcastAwareClass : hazelcastAwareClasses) {
+				if (HazelcastAwareProcessor.class.isAssignableFrom(hazelcastAwareClass)) {
+					hazelcastAwareProcessorClasses.add(
+							(Class<? extends HazelcastAwareProcessor>) hazelcastAwareClass);
+				}
+			}
+		}
+	}
+	
+	@SuppressWarnings({ "unchecked" })
+	protected void findHazelcastAwareInjectorClasses() {
+		if (hazelcastAwareClasses != null) {
+			hazelcastAwareInjectorClasses = 
+					new HashSet<Class<? extends HazelcastAwareInjector<?>>>();
+			for (Class<?> hazelcastAwareClass : hazelcastAwareClasses) {
+				if (HazelcastAwareInjector.class.isAssignableFrom(hazelcastAwareClass)) {
+					hazelcastAwareInjectorClasses.add(
+							(Class<? extends HazelcastAwareInjector<?>>) hazelcastAwareClass);
+				}
+			}
+		}
+	}
+	
 	@Override
 	public boolean isAvailable() {
 		return true;
@@ -123,6 +157,16 @@ public class AnnotationBasedConfigProvider implements ConfigProvider {
 	@Override
 	public Set<Class<? extends HazelcastAwareConfigProvider>> getHazelcastAwareConfigProviderClasses() {
 		return hazelcastAwareConfigProviderClasses;
+	}
+	
+	@Override
+	public Set<Class<? extends HazelcastAwareProcessor>> getHazelcastAwareProcessorClasses() {
+		return hazelcastAwareProcessorClasses;
+	}
+	
+	@Override
+	public Set<Class<? extends HazelcastAwareInjector<?>>> getHazelcastAwareInjectorClasses() {
+		return hazelcastAwareInjectorClasses;
 	}
 	
 	@Override

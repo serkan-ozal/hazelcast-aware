@@ -38,7 +38,7 @@ public class HazelcastAwareInjectorProcessor implements HazelcastAwareProcessor 
 	
 	@Override
 	public int getOrder() {
-		return HIGH_ORDER;
+		return HIGHEST_ORDER;
 	}
 
 	@Override

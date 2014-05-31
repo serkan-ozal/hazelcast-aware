@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-package com.hazelcast.aware.processor;
+package com.hazelcast.aware.config.provider.annotation;
 
-import com.hazelcast.aware.config.manager.ConfigManager;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author Serkan ÖZAL
@@ -25,13 +28,9 @@ import com.hazelcast.aware.config.manager.ConfigManager;
  * 		GitHub   : https://github.com/serkan-ozal
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
-public interface HazelcastAwareProcessor {
-	
-	int LOWEST_ORDER = Integer.MIN_VALUE;
-	int ORDER_DOESNT_MATTER = 0;
-	int HIGHEST_ORDER = Integer.MAX_VALUE;
-	
-	int getOrder();
-	void process(ConfigManager configManager);
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@HazelcastAwareAnnotation
+public @interface HazelcastAwareInjectorClass {
 	
 }

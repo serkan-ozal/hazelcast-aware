@@ -21,6 +21,8 @@ import java.util.Set;
 
 import com.hazelcast.aware.domain.model.config.HazelcastAwareClassConfig;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareFieldConfig;
+import com.hazelcast.aware.injector.HazelcastAwareInjector;
+import com.hazelcast.aware.processor.HazelcastAwareProcessor;
 
 /**
  * @author Serkan ÖZAL
@@ -35,6 +37,8 @@ public interface ConfigProvider {
 	
 	Set<Class<?>> getHazelcastAwareClasses();
 	Set<Class<? extends HazelcastAwareConfigProvider>> getHazelcastAwareConfigProviderClasses();
+	Set<Class<? extends HazelcastAwareProcessor>> getHazelcastAwareProcessorClasses();
+	Set<Class<? extends HazelcastAwareInjector<?>>> getHazelcastAwareInjectorClasses();
 	
 	HazelcastAwareFieldConfig getHazelcastAwareFieldConfig(Field field);
 	HazelcastAwareClassConfig getHazelcastAwareClassConfig(Class<?> clazz);

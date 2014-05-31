@@ -28,6 +28,8 @@ import com.hazelcast.aware.config.provider.properties.PropertiesBasedConfigProvi
 import com.hazelcast.aware.config.provider.xml.XmlBasedConfigProvider;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareClassConfig;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareFieldConfig;
+import com.hazelcast.aware.injector.HazelcastAwareInjector;
+import com.hazelcast.aware.processor.HazelcastAwareProcessor;
 
 /**
  * @author Serkan ÖZAL
@@ -40,6 +42,8 @@ public class ConfigManagerImpl extends BaseConfigManager {
 
 	protected Set<Class<?>> hazelcastAwareClasses;
 	protected Set<Class<? extends HazelcastAwareConfigProvider>> hazelcastAwareConfigProviderClasses;
+	protected Set<Class<? extends HazelcastAwareProcessor>> hazelcastAwareProcessorClasses;
+	protected Set<Class<? extends HazelcastAwareInjector<?>>> hazelcastAwareInjectorClasses;
 	
 	@Override
 	protected void init() {
@@ -49,6 +53,8 @@ public class ConfigManagerImpl extends BaseConfigManager {
 		
 		findHazelcastAwareClasses();
 		findHazelcastAwareConfigProviderClasses();
+		findHazelcastAwareProcessorClasses();
+		findHazelcastAwareInjectorClasses();
 	}
 	
 	protected void findHazelcastAwareClasses() {
@@ -78,6 +84,34 @@ public class ConfigManagerImpl extends BaseConfigManager {
 		logger.log(Level.INFO, "Found Hazelcast-Aware Config Provider classes: " + hazelcastAwareConfigProviderClasses);
 	}
 	
+	protected void findHazelcastAwareProcessorClasses() {
+		hazelcastAwareProcessorClasses = new HashSet<Class<? extends HazelcastAwareProcessor>>();
+		for (ConfigProvider configProvider : configProviderList) {
+			if (configProvider.isAvailable()) {
+				Set<Class<? extends HazelcastAwareProcessor>> hzAwareProcessorClasses = 
+						configProvider.getHazelcastAwareProcessorClasses();
+				if (hzAwareProcessorClasses != null) {
+					hazelcastAwareProcessorClasses.addAll(hzAwareProcessorClasses);
+				}	
+			}
+		}	
+		logger.log(Level.INFO, "Found Hazelcast-Aware Processor classes: " + hazelcastAwareProcessorClasses);
+	}
+	
+	protected void findHazelcastAwareInjectorClasses() {
+		hazelcastAwareInjectorClasses = new HashSet<Class<? extends HazelcastAwareInjector<?>>>();
+		for (ConfigProvider configProvider : configProviderList) {
+			if (configProvider.isAvailable()) {
+				Set<Class<? extends HazelcastAwareInjector<?>>> hzAwareInjectorClasses = 
+						configProvider.getHazelcastAwareInjectorClasses();
+				if (hzAwareInjectorClasses != null) {
+					hazelcastAwareInjectorClasses.addAll(hzAwareInjectorClasses);
+				}	
+			}
+		}	
+		logger.log(Level.INFO, "Found Hazelcast-Aware Injector classes: " + hazelcastAwareInjectorClasses);
+	}
+	
 	@Override
 	public Set<Class<?>> getHazelcastAwareClasses() {
 		return hazelcastAwareClasses;
@@ -86,6 +120,16 @@ public class ConfigManagerImpl extends BaseConfigManager {
 	@Override
 	public Set<Class<? extends HazelcastAwareConfigProvider>> getHazelcastAwareConfigProviderClasses() {
 		return hazelcastAwareConfigProviderClasses;
+	}
+	
+	@Override
+	public Set<Class<? extends HazelcastAwareProcessor>> getHazelcastAwareProcessorClasses() {
+		return hazelcastAwareProcessorClasses;
+	}
+	
+	@Override
+	public Set<Class<? extends HazelcastAwareInjector<?>>> getHazelcastAwareInjectorClasses() {
+		return hazelcastAwareInjectorClasses;
 	}
 
 	@Override

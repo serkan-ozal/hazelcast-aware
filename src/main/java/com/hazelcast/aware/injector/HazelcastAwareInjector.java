@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package com.hazelcast.aware.processor;
-
-import com.hazelcast.aware.config.manager.ConfigManager;
+package com.hazelcast.aware.injector;
 
 /**
  * @author Serkan ÖZAL
@@ -25,13 +23,16 @@ import com.hazelcast.aware.config.manager.ConfigManager;
  * 		GitHub   : https://github.com/serkan-ozal
  * 		LinkedIn : www.linkedin.com/in/serkanozal
  */
-public interface HazelcastAwareProcessor {
+public interface HazelcastAwareInjector<T> {
 	
 	int LOWEST_ORDER = Integer.MIN_VALUE;
 	int ORDER_DOESNT_MATTER = 0;
 	int HIGHEST_ORDER = Integer.MAX_VALUE;
 	
+	Class<Object> TYPE_DOESNT_MATTER = Object.class;
+	
 	int getOrder();
-	void process(ConfigManager configManager);
+	Class<T> getType();
+	void inject(T obj);
 	
 }

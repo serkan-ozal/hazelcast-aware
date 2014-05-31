@@ -41,7 +41,7 @@ public class HazelcastAwareConfigProviderProcessor implements HazelcastAwareProc
 	
 	@Override
 	public int getOrder() {
-		return HIGH_ORDER - 1;
+		return HIGHEST_ORDER;
 	}
 
 	@Override

@@ -16,8 +16,8 @@
 
 package com.hazelcast.aware.instrument;
 
+import com.hazelcast.aware.HazelcastAwarer;
 import com.hazelcast.aware.config.provider.annotation.HazelcastAwareClass;
-import com.hazelcast.aware.util.HazelcastAwareUtil;
 
 import javassist.ClassClassPath;
 import javassist.ClassPool;
@@ -40,8 +40,8 @@ public class HazelcastAwareClassInstrumenter {
 	}
 	
 	protected void init() {
-		 cp.importPackage(HazelcastAwareUtil.class.getPackage().getName());
-         cp.appendClassPath(new ClassClassPath(HazelcastAwareUtil.class));
+		 cp.importPackage(HazelcastAwarer.class.getPackage().getName());
+         cp.appendClassPath(new ClassClassPath(HazelcastAwarer.class));
 	}
     
 	protected boolean isHazelcastAware(CtClass clazz) {
@@ -56,7 +56,7 @@ public class HazelcastAwareClassInstrumenter {
 	            CtConstructor[] constructors = ct.getConstructors();
 	            
 	            for (CtConstructor c : constructors) {
-	            	c.insertAfter("HazelcastAwareUtil.injectHazelcast(this);");
+	            	c.insertAfter("HazelcastAwarer.injectHazelcast(this);");
 	            }
 	            
 	            return ct.toBytecode();

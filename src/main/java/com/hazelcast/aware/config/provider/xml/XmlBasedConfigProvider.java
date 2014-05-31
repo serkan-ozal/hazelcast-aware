@@ -23,6 +23,8 @@ import com.hazelcast.aware.config.provider.ConfigProvider;
 import com.hazelcast.aware.config.provider.HazelcastAwareConfigProvider;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareClassConfig;
 import com.hazelcast.aware.domain.model.config.HazelcastAwareFieldConfig;
+import com.hazelcast.aware.injector.HazelcastAwareInjector;
+import com.hazelcast.aware.processor.HazelcastAwareProcessor;
 
 /**
  * @author Serkan ÖZAL
@@ -45,6 +47,16 @@ public class XmlBasedConfigProvider implements ConfigProvider {
 	
 	@Override
 	public Set<Class<? extends HazelcastAwareConfigProvider>> getHazelcastAwareConfigProviderClasses() {
+		return null;
+	}
+	
+	@Override
+	public Set<Class<? extends HazelcastAwareProcessor>> getHazelcastAwareProcessorClasses() {
+		return null;
+	}
+	
+	@Override
+	public Set<Class<? extends HazelcastAwareInjector<?>>> getHazelcastAwareInjectorClasses() {
 		return null;
 	}
 

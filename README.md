@@ -85,7 +85,7 @@ You can access object which holds default configurations by **`DefaultConfigs ge
 
 Here are default configurations:
 
-* **Default Instance name:** If there is no specified instance name for Hazelcast aware class or field, this instance name is used to get default Hazelcast instance. If there is no specified instance name for Hazelcast aware class or field and default instance name is empty in default configurations, all Hazelcast instances are sorted by their names as ascending and got first one.
+* **Default Instance name:** If there is no specified instance name for Hazelcast aware class or field, this instance name is used to get default Hazelcast instance. If there is no specified instance name for Hazelcast aware class or field and default instance name is empty in default configurations, the first instance is returned from **`com.hazelcast.instance.HazelcastInstanceFactory.getAllHazelcastInstances()`**.
 
 4.2. Hazelcast-Aware Class
 -------

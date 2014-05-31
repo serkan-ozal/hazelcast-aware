@@ -8,7 +8,7 @@
 
 To find and make thses classes or fields Hazelcast aware, there are two ways:
 
-1. You just need to call explicitly making aware method at startup in anywhere of your application.
+1) You just need to call explicitly making aware method at startup in anywhere of your application.
 
 ~~~~~ java
 ...
@@ -20,7 +20,7 @@ com.hazelcast.aware.HazelcastAwarer.makeHazelcastAware();
 
 or
 
-2. You can extend your main class from **`com.hazelcast.aware.HazelcastAware`** class.
+2) You can extend your main class from **`com.hazelcast.aware.HazelcastAware`** class.
 
 ~~~~~ java
 ...

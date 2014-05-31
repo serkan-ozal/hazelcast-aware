@@ -79,22 +79,31 @@ Latest version is `1.0.0-SNAPSHOT`.
 =======
 
 4.1. Hazelcast-Aware Class
+-------
 
 4.2. Hazelcast-Aware Map Typed Field
+-------
 
 4.3. Hazelcast-Aware List Typed Field
+-------
 
 4.4. Hazelcast-Aware Set Typed Field
+-------
 
 4.5. Hazelcast-Aware Queue Typed Field
+-------
 
 4.6. Hazelcast-Aware Topic Typed Field
+-------
 
 4.7. Hazelcast-Aware Processor
+-------
 
 4.8. Hazelcast-Aware Injector
+-------
 
 4.9. Hazelcast-Aware Config Provider
+-------
 
 5. Roadmap
 =======

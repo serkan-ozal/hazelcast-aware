@@ -268,7 +268,7 @@ public class HazelcastAwareBean {
 4.8. Hazelcast-Aware Initializer
 -------
 
-You can specify your custom initializer classes by implementing any **`com.hazelcast.aware.initializer.HazelcastAwareInitializer`** interface to do some stuff before all operations such as setting default configurations in **`com.hazelcast.aware.config.DefaultConfigs`** class. Your custom initializer classes are found while scanning claspath and registered automatically. 
+You can specify your custom initializer classes by implementing **`com.hazelcast.aware.initializer.HazelcastAwareInitializer`** interface to do some stuff before all operations such as setting default configurations in **`com.hazelcast.aware.config.DefaultConfigs`** class. Your custom initializer classes are found while scanning claspath and registered automatically. 
 
 You can specify execution order of your initializer by implementing **`int getOrder()`** method. There are three pre-defined execution orders such as **`HIGHEST_ORDER`**, **`ORDER_DOESNT_MATTER`** and **`LOWEST_ORDER`**, 
 
@@ -293,7 +293,7 @@ public class MyHazelcastAwareInitializer implements HazelcastAwareInitializer {
 4.9. Hazelcast-Aware Injector
 -------
 
-You can specify your custom injector classes by implementing any **`com.hazelcast.aware.injector.HazelcastAwareInjector`** interface to do some stuff (injecting or whatever you want) on instances of Hazelcast aware classes. Your custom injector classes are found while scanning claspath and registered automatically. 
+You can specify your custom injector classes by implementing **`com.hazelcast.aware.injector.HazelcastAwareInjector`** interface to do some stuff (injecting or whatever you want) on instances of Hazelcast aware classes. Your custom injector classes are found while scanning claspath and registered automatically. 
 
 You must specify type of your related class to inject by implementing **`Class<T> getType()`** method. If you are interested in all types, you can return **`Object.class`** or pre-defined expression of it as **`TYPE_DOESNT_MATTER`** as type in  **`getType()`** method.
 
@@ -323,6 +323,28 @@ public class MyHazelcastAwareInjector implements HazelcastAwareInjector<MyEntity
 
 4.10. Hazelcast-Aware Config Processor
 -------
+
+You can specify your custom processor classes by implementing **`com.hazelcast.aware.processor.HazelcastAwareProcessor`** interface to do some stuff after instrumentation operations are done. Your custom processor classes are found while scanning claspath and registered automatically. 
+
+You can specify execution order of your processor by implementing **`int getOrder()`** method. There are three pre-defined execution orders such as **`HIGHEST_ORDER`**, **`ORDER_DOESNT_MATTER`** and **`LOWEST_ORDER`**, 
+
+~~~~~ java
+@HazelcastAwareClass
+public class MyHazelcastAwareProcessor implements HazelcastAwareprocessor {
+
+	@Override
+	public int getOrder() {
+		return ORDER_DOESNT_MATTER;
+	}
+	
+	
+	@Override
+	public void process(ConfigManager configManager) {
+		// Do some stuff after instrumenting
+	}
+	
+}	
+~~~~~
 
 4.11. Hazelcast-Aware Config Provider
 -------

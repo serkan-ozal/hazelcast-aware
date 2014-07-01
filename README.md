@@ -6,7 +6,7 @@
 2. Usage
 =======
 
-To find and make thses classes or fields Hazelcast aware, there are two ways:
+To find and make these classes or fields Hazelcast aware, there are two ways:
 
 1) You just need to call explicitly making aware method at startup in anywhere of your application.
 
